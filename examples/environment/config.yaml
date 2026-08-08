@@ -115,7 +115,8 @@
 #   cli:                          # 命令行工具 (含提供CLI接口的桌面端工具)
 #     - gcc                       #   GNU C Compiler
 #     - arm-none-eabi-gcc         #   ARM嵌入式交叉编译器
-#     - plantuml                  #   PlantUML模型渲染
+#     # -- 模型工具: SysML/UML建模 (待集成, 当前由DA-03 Agent直接生成文本)
+#     # - sysml_renderer           #   SysML v2 文本→图形渲染
 #     - git                       #   版本管理
 #     - make                      #   构建系统
 #     # 可按需扩展:
@@ -166,10 +167,8 @@
 #     req-decomp:
 #       - llm_api                #   需求分解需要LLM推理
 #     model-build:
-#       - plantuml               #   模型渲染
-#       - llm_api                #   LLM辅助建模
+#       - llm_api                #   LLM辅助建模 (SysML/UML由DA-03 Agent直接生成文本)
 #     model-check:
-#       - plantuml               #   模型语法检查
 #       - llm_api                #   LLM一致性分析
 #     code-gen:
 #       - gcc                    #   编译验证

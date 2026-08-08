@@ -1,0 +1,108 @@
+# ============================================================
+# 公司规范模板 — 全量配置 (注释版)
+# ============================================================
+#
+# 公司级规范覆盖所有项目，优先级高于DAL默认推荐。
+# PLA L2在路径决策时按 项目约束 > 公司约束 > DAL默认 逐级解析。
+#
+# 本文件展示所有可配置的公司级策略及语义说明。
+# ============================================================
+
+# ── 公司级标准策略 ───────────────────────────────────────
+# company_standards:
+
+  # ── 模型策略 (影响PLA L2路径选择) ─────────────────────
+  # 控制项目是否使用基于模型的开发方法。
+  #
+  # 可选值:
+  #   model_required    — 所有项目强制基于模型开发，无论DAL
+  #                       PLA路径: S0-S3 SysML, S4-S6 UML
+  #                       触发: DO-331全部目标
+  #   model_optional    — 按DAL推荐决定是否需要模型 (默认)
+  #                       PLA路径: DAL A/B → 模型优先; DAL C → 按活动; DAL D/E → LLM优先
+  #   model_prohibited  — 禁止使用模型，纯文本路径
+  #                       PLA路径: 全部活动走LLM路径
+  #                       触发: DO-331不适用
+  #
+  # model_policy: "model_optional"
+
+  # ── 编码标准 ──────────────────────────────────────────
+  # 规定项目采用的编码规范。
+  #
+  # 可选值示例:
+  #   MISRA-C:2012        — 汽车/航空C语言安全子集 (最常用)
+  #   MISRA-C:2023        — 最新版 (含C11/C17支持)
+  #   CERT C              — SEI CERT C安全编码标准
+  #   custom              — 自定义编码规范
+  #
+  # coding_standard: "MISRA-C:2012"
+  # coding_standard_version: "Amendment 1"  # 子版本
+
+  # ── 文档语言 ──────────────────────────────────────────
+  # 正式交付文档的书写语言。
+  # 可选值: "zh-CN" (简体中文) | "en" (英文) | "zh-CN,en" (双语)
+  #
+  # documentation_language: "zh-CN"
+
+  # ── 评审策略 ──────────────────────────────────────────
+  # 控制人工评审的门槛。
+  #
+  # 可选值:
+  #   mandatory_for_all_dal      — 所有DAL级别均需人工评审 (最严格)
+  #   mandatory_above_dal_d      — DAL C及以上需评审，D/E自动通过
+  #   as_per_dal                 — 按DAL推荐 (A/B 逐节点, C 抽查, D/E 异常触发)
+  #
+  # review_policy: "mandatory_for_all_dal"
+
+  # ── 工具鉴定策略 ──────────────────────────────────────
+  # 控制开发工具是否需要DO-178C工具鉴定。
+  #
+  # 可选值:
+  #   rigorous                  — 严格: 编译器、代码生成器、测试工具均需鉴定
+  #   per_do178c                — 按DO-178C §12.2判定: 工具输出被验证则降级
+  #   relaxed                   — 宽松: 仅代码生成器需要 (仅适用于DAL D/E项目)
+  #
+  # tool_qualification_policy: "per_do178c"
+
+  # ── 配置管理策略 ──────────────────────────────────────
+  # cm_policy:
+  #   vcs: "git"                      # 版本控制系统
+  #   baseline_strategy: "stage"      # 基线策略: stage (按阶段基线化) | artifact (按制品独立基线化)
+  #   change_control: "CCB"           # 变更控制: CCB (变更控制委员会) | TL (技术负责人审批)
+  #   problem_reporting: "mandatory"  # 问题报告: mandatory / as_per_dal
+
+  # ── 质量保证策略 ──────────────────────────────────────
+  # qa_policy:
+  #   sqa_independence: "per_dal"     # SQA独立性: per_dal / always_independent / not_required
+  #   audit_frequency: "per_phase"    # 审计频率: per_phase (每阶段) / quarterly / per_release
+  #   process_compliance_check: true  # 过程合规检查
+
+  # ── 供应商管理 (如有外包) ─────────────────────────────
+  # supplier_policy:
+  #   oversight_required: "as_per_dal"  # 供应商监督: as_per_dal / mandatory / not_required
+  #   artifact_handover: ["SR", "HLR", "LLR", "Source Code", "Test Results", "Trace Data"]
+
+  # ── 编译器策略 ────────────────────────────────────────
+  # compiler_policy:
+  #   host_compiler: "gcc"              # 开发编译器
+  #   target_compiler: "arm-none-eabi-gcc"  # 目标编译器
+  #   dual_compilation: true            # 双编译器验证 (不同编译器交叉验证)
+  #   warnings_as_errors: true          # 警告即错误
+  #   optimization_level: "O2"          # 优化级别: O0 / O1 / O2 / O3 / Os
+
+  # ── 测试策略 ──────────────────────────────────────────
+  # testing_policy:
+  #   unit_test_required: "as_per_dal"     # 单元测试: as_per_dal / mandatory / not_required
+  #   integration_test_required: "as_per_dal"
+  #   hw_in_loop_required: false           # 硬件在环测试 (按目标平台决定)
+  #   coverage_tool: "gcov"                # 覆盖率工具
+  #   test_framework: "custom"             # 测试框架: custom / CUnit / Unity / CppUTest
+
+# ── 公司组织信息 ─────────────────────────────────────────
+# 可选: 用于证据包的元数据自动填充。
+#
+# organization:
+#   name: "YOUR_ORGANIZATION"           # 组织名称
+#   department: "YOUR_DEPARTMENT"       # 部门
+#   certification_authority: "CAAC"     # 审定机构: CAAC / FAA / EASA
+#   document_number_prefix: "YOUR-DOC"  # 文档编号前缀

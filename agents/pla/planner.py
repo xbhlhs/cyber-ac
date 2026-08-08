@@ -40,7 +40,8 @@ class Planner:
         self._do178c = self._load_do178c()
 
     def _load_do178c(self) -> dict:
-        p = Path("environment/constraints/do178c.yaml")
+        project_id = self.project_id or "sr1"
+        p = Path(f"projects/{project_id}/.pla/environment/constraints/do178c.yaml")
         if p.exists():
             with open(str(p)) as f:
                 return yaml.safe_load(f)

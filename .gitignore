@@ -5,6 +5,9 @@ __pycache__/
 *.o
 *.out
 
+# PLA runtime directories (非制品，PLA自动生成)
+.pla/
+
 # Python
 *.egg-info/
 dist/

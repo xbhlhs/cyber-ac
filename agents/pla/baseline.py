@@ -12,7 +12,9 @@ class BaselineManager:
 
     def __init__(self, project_dir: str):
         self.project_dir = Path(project_dir)
-        self.baseline_file = self.project_dir / ".baseline.json"
+        self.pla_dir = self.project_dir / ".pla"
+        self.pla_dir.mkdir(parents=True, exist_ok=True)
+        self.baseline_file = self.pla_dir / ".baseline.json"
         self._baselines = self._load()
 
     def _load(self) -> dict:

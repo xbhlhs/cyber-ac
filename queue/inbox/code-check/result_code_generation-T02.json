@@ -1,0 +1,37 @@
+{
+  "task_id": "code_generation-T02",
+  "da_name": "code-check",
+  "status": "completed",
+  "artifacts": [
+    "/home/c/workspace/fusion/projects/sr1/evidence/code_check.md"
+  ],
+  "output": {
+    "host_compile": "ok",
+    "embedded_compile": "ok",
+    "warnings": 0,
+    "tests_passed": 24,
+    "tests_total": 24,
+    "static_analysis": "pass",
+    "trace_coverage": "11/11"
+  },
+  "process_data": {
+    "reasoning": "DA-06 按 AGENT.md 契约执行代码检查（只检查不修改 sr1.c/sr1.h）：(1) 读取任务上下文与权威 LLR（11 条：LLR-LA-001~003/LLR-LB-001~003/LLR-LC-001~002/LLR-COM-001~003）；(2) make sr1-clean 后 make sr1-all 双编译器全量重编：host gcc 15.2.0 (-Wall -Wextra -std=c11 -pedantic -O2) 与 arm-none-eabi-gcc 13.3.1 (Cortex-M4 Thumb-2) 均零警告零错误；(3) 再生成 API（FUN1_ProcessEqaValidOutput 三参、EQA_Data_t/EQA_Cache_t/Fun1_RangeConfig_t/EQA_Output_t）与测试载体 main.c 调用点完全匹配，main.c 无需修改即直接编译通过，DA-05 声明属实；(4) ./projects/sr1/build/sr1 运行测试：TC01~TC11 共 24 断言全部 PASS（24/24），返回码 0；(5) 静态分析：malloc/realloc/calloc/free 仅出现在注释（零实际调用）、无 goto、无递归自调用、sr1.c/sr1.h 无任何 for/while/do 循环、14 个函数均有 /** 注释头（100%）；(6) 追溯注释覆盖：11 条 LLR 全部在 sr1.c/sr1.h 注释中被引用（11/11），LLR-1.x/UC-01/DK-01 过时引用零残留，AMB-02/03/04 与 LLR-AMB-08~11 为现行有效未决项非过时；(7) 报告写入 projects/sr1/evidence/code_check.md。DAL D 下 A5-* 编码验证目标不适用（applicable_DAL A/B/C），任务上下文注入目标数为 0，故不声明任何 A5-* 符合性，objective_compliance 留空。",
+    "main_c_modified": false,
+    "code_module_modified": false
+  },
+  "unresolved": [
+    "AMB-01（周期语义未定义：周期时长/边界/触发/输出时刻）— 继承自 HLR，代码以 PROCESS_CYCLE_MS 编译期常量最小落实",
+    "AMB-02（有效性判定准则未定义）— 代码仅提供最小结构式评估（指针非空+范围），判据待上游消解",
+    "AMB-03（一致性比较语义未定义）— 代码采用字段逐一相等(==)，待上游消解",
+    "AMB-04（LC 无有效性不对称，设计意图已确认）— 代码显式保留（LLR-COM-003），非缺陷",
+    "AMB-05（错误处理缺失：抑制期间下游行为未定义）— 代码取最小静默处理",
+    "AMB-06/AMB-07（数据类型/数据来源未定义）— 代码采用最小结构体，待上游消解",
+    "LLR-AMB-08（数据结构定义未定）— 代码采用最小结构（EQA_Data_t/EQB_Data_t/EQC_Data_t）",
+    "LLR-AMB-09（PROCESS_CYCLE_MS 数值/命名未定）— 代码保留基线值 10ms",
+    "LLR-AMB-10（抑制接口行为未定义）— 代码取全抑制/静默",
+    "LLR-AMB-11（数据获取接口未定义）— 代码提供 FUN1_StoreEqbData/FUN1_StoreEqcData 最小存储动作",
+    "注：以上均为需求链继承的既有未决项（只记录不消解），非本模块代码缺陷；本次检查未发现 sr1.c/sr1.h 代码缺陷"
+  ],
+  "objective_compliance": [],
+  "error": ""
+}

@@ -1,0 +1,89 @@
+# PLA/DA 融合开发体系 — 基础设施配置
+#
+# 这是PLA和DA Agent运行的工程环境，不绑定任何具体项目。
+# 项目特定约束见 projects/{project_id}/config.yaml
+
+# 标准库路径 (PLA/DA各层可能需要引用)
+standards:
+  do178c: "environment/constraints/do178c.yaml"
+  do331: "environment/constraints/do331.yaml"
+  arp4754b: "$HOME/wiki/raw/standards/SAE ARP 4754B-2023.pdf"
+  arp4761a: "$HOME/wiki/raw/standards/SAE ARP 4761A-2023 英文版.pdf"
+  ccar21: "$HOME/wiki/raw/standards/民用航空产品和零部件合格审定规定（CCAR-21）.pdf"
+  ccar25: "$HOME/wiki/raw/standards/运输类飞机适航标准（CCAR-25）.pdf"
+
+# DA Pool — 全局能力池 (14个DA)
+da_pool:
+  - { name: "req-analysis",       capability: "理解分析类", agent_file: "agents/da-01/AGENT.md" }
+  - { name: "req-decomp",         capability: "内容生成类", agent_file: "agents/da-02/AGENT.md" }
+  - { name: "model-build",        capability: "模型处理类", agent_file: "agents/da-03/AGENT.md" }
+  - { name: "model-check",        capability: "校验分析类", agent_file: "agents/da-04/AGENT.md" }
+  - { name: "code-gen",           capability: "内容生成类", agent_file: "agents/da-05/AGENT.md" }
+  - { name: "code-check",         capability: "校验分析类", agent_file: "agents/da-06/AGENT.md" }
+  - { name: "test-scenario",      capability: "理解分析类", agent_file: "agents/da-07/AGENT.md" }
+  - { name: "test-case-gen",      capability: "内容生成类", agent_file: "agents/da-08/AGENT.md" }
+  - { name: "test-proc-gen",      capability: "内容生成类", agent_file: "agents/da-09/AGENT.md" }
+  - { name: "test-exec",          capability: "工具执行类", agent_file: "agents/da-10/AGENT.md" }
+  - { name: "verify-analysis",    capability: "校验分析类", agent_file: "agents/da-11/AGENT.md" }
+  - { name: "trace-maint",        capability: "关系处理类", agent_file: "agents/da-12/AGENT.md" }
+  - { name: "review-materials",   capability: "证据处理类", agent_file: "agents/da-13/AGENT.md" }
+  - { name: "airworth-evidence",  capability: "证据处理类", agent_file: "agents/da-14/AGENT.md" }
+
+# ============================================================
+# 工程资源池 — 系统可用的所有工具
+#
+# CLI  — 命令行工具（含提供CLI接口的桌面端工具）
+# API  — 服务化资源（LLM推理、存量系统API、ReqIF/docx导入、平台同步等）
+# Human — 人工评审闸门
+# ============================================================
+engineering_resources:
+  cli: [gcc, plantuml, git, make]
+  api: [llm_api, req_import, baseline_sync]
+  human: [项目技术负责人, 质量保证人员, 适航联络人员]
+
+# ============================================================
+# DA 工具分配 — 全局默认映射
+#
+# 每个DA使用的具体工具在这里定义，项目可通过 projects/{id}/config.yaml 覆盖。
+# 工具分为两类:
+#   base   — 所有DA都有的基础工具 (read_file, write_file, terminal, search_files)
+#   da     — 每个DA的专用工具
+#
+# 项目只需要在 config.yaml 中声明覆盖项，未声明的DA沿用此默认映射。
+# 例如: 项目规范禁止UML，则覆盖 model-build 的 tools 为 [idef0, llm_api]
+# ============================================================
+da_tools:
+  base: [read_file, write_file, terminal, search_files]
+  da:
+    req-analysis:       [llm_api]
+    req-decomp:         [llm_api]
+    model-build:        [plantuml, llm_api]
+    model-check:        [plantuml, llm_api]
+    code-gen:           [gcc, llm_api]
+    code-check:         [gcc]
+    test-scenario:      [llm_api]
+    test-case-gen:      [llm_api]
+    test-proc-gen:      [llm_api]
+    test-exec:          [gcc, make]
+    verify-analysis:    [llm_api]
+    trace-maint:        []
+    review-materials:   [llm_api]
+    airworth-evidence:  []
+
+# ============================================================
+# 人工闸门 (基础设施级——PLA在编排时根据DAL决定是否触发)
+# ============================================================
+human_gates:
+  - gate: "initial_plan"
+    trigger: "DAL A/B required"
+  - gate: "da_path_selection"
+    trigger: "LLM path + DAL >= C"
+  - gate: "verification_confirm"
+    trigger: "test gap or deviation exceeded"
+  - gate: "evidence_archive"
+    trigger: "L5 evidence package ready"
+
+# 消息通道
+queue:
+  outbox: "queue/outbox/"
+  inbox: "queue/inbox/"

@@ -1,0 +1,62 @@
+{
+  "task_id": "test_case_gen-T03",
+  "da_name": "test-proc-gen",
+  "activity_type": "test_case_gen",
+  "description": "生成规程",
+  "task_name": "生成规程",
+  "inputs": {},
+  "expected_outputs": [
+    "projects/sr1/tests/test_procedures.md"
+  ],
+  "constraints": {
+    "dal_level": "D",
+    "applicable_objectives": [
+      {
+        "id": "A6-1",
+        "desc": "Executable Object Code complies with HLR (normal range)",
+        "applicable_DAL": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "do178c_ref": "6.4.a"
+      },
+      {
+        "id": "A6-2",
+        "desc": "Executable Object Code is robust with HLR (robustness)",
+        "applicable_DAL": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "do178c_ref": "6.4.b"
+      },
+      {
+        "id": "A6-5",
+        "desc": "Executable Object Code is compatible with target computer",
+        "applicable_DAL": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "do178c_ref": "6.4.e"
+      }
+    ],
+    "coding_constraints": {
+      "language": "C",
+      "standard": "C11",
+      "compiler": "GCC",
+      "no_dynamic_memory": true
+    }
+  },
+  "dal_level": "D",
+  "development_path": "fusion",
+  "human_gate_before": false,
+  "human_gate_after": false,
+  "human_gate_type": "",
+  "created_at": "2026-08-08T15:23:10.067756",
+  "dag_version": 1
+}

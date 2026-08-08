@@ -1,0 +1,37 @@
+{
+  "task_id": "code_generation-T01",
+  "da_name": "code-gen",
+  "status": "completed",
+  "artifacts": [
+    "/home/c/workspace/fusion/projects/sr1/src/sr1.c",
+    "/home/c/workspace/fusion/projects/sr1/src/sr1.h"
+  ],
+  "output": {
+    "files": [
+      "/home/c/workspace/fusion/projects/sr1/src/sr1.c",
+      "/home/c/workspace/fusion/projects/sr1/src/sr1.h"
+    ],
+    "api": "Preserved main.c contract exactly: EQA_Data_t{la,lb,lc,la_valid,lb_valid}, EQB_Data_t{lc}, EQC_Data_t{la,lb}, EQA_Cache_t{eqb,eqb_valid,eqc,eqc_valid}, EQA_Output_t{la_out_valid,la_out,lb_out_valid,lb_out,lc_out_valid,lc_out}, Fun1_RangeConfig_t, FUN1_DEFAULT_RANGE, FUN1_ProcessEqaValidOutput(const EQA_Data_t*, const EQA_Cache_t*, const Fun1_RangeConfig_t*) returning EQA_Output_t by value. All FUN1_* helpers kept with unchanged signatures: FUN1_IsLaDataValid/FUN1_IsLbDataValid, FUN1_CompareLaMatch/FUN1_CompareLbMatch/FUN1_CompareLcMatch, FUN1_LaOutputAllowed/FUN1_LbOutputAllowed/FUN1_LcOutputAllowed, FUN1_SetRangeLa/FUN1_SetRangeLb/FUN1_SetRangeDefault, FUN1_StoreEqbData/FUN1_StoreEqcData. NOTE: EQA_Data_t.raw_la/raw_lb pointer fields REMOVED — dead legacy fields (only referenced by the replaced header, no LLR backing; LLR-AMB-08/LLR-AMB-11 leave struct/data-acquisition undefined). main.c compiles and passes against the regenerated API with zero modifications.",
+    "trace_notes": "All obsolete LLR-1.x / UC-01 / DK-01 references replaced with current LLR-{CH}-{NN} IDs (LLR-LA-001..003, LLR-LB-001..003, LLR-LC-001..002, LLR-COM-001..003). Every struct and function carries LLR trace comments. Behavior: LA = consume la_valid flag (LLR-LA-001) + field-by-field match vs EQC.LA (LLR-LA-002) gated on (la_valid && la_match) (LLR-LA-003); LB symmetric (LLR-LB-001..003); LC = consistency ONLY vs EQB.LC, NO validity flag/branch (LLR-LC-001/002, LLR-COM-003, design intent AMB-04 explicitly preserved); three channels independent per cycle (LLR-COM-002); PROCESS_CYCLE_MS compile-time constant (LLR-COM-001). Comparisons use field-by-field == (zero dynamic memory).",
+    "verification": "gcc -Wall -Wextra -std=c11 -pedantic -c projects/sr1/src/sr1.c -> clean (0 warnings, 0 errors). make sr1-all -> host GCC and arm-none-eabi-gcc 13.3.1 both compile clean. ./projects/sr1/build/sr1 -> 24/24 assertions pass (TC01-TC11), exit 0. grep: no malloc/realloc/calloc/free anywhere in sr1.c; no obsolete LLR-1.x/UC-01/DK-01 strings remain in regenerated files.",
+    "objective_compliance_note": "DAL D: coding verification objectives (A5-*) NOT applicable (applicable_DAL=[A,B,C]); task context applicable_objectives=[]. objective_compliance left empty per contract."
+  },
+  "process_data": {
+    "reasoning": "Read agents/da-05/AGENT.md (DA-05 contract: LLM direct path LLR->C allowed for DAL D, trace comments required, no dynamic memory, no self code-checking), task context JSON, the authoritative LLR (11 items in LLR-{CH}-{NN} numbering), the stale sr1.c/sr1.h (obsolete LLR-1.1..1.10/UC-01/DK-01 numbering), and main.c (207-line test harness, TC01-TC11). Regenerated sr1.h and sr1.c directly from the current LLR. main.c call-site contract verified before writing: designated initializers on EQA_Data_t/EQA_Cache_t, field access cache.eqc.la/lb, cache.eqb.lc, output fields out.*_valid/out.*, and FUN1_ProcessEqaValidOutput(&eqa,&cache,&FUN1_DEFAULT_RANGE) returning EQA_Output_t by value — all preserved. Kept the full FUN1_* API surface with unchanged signatures. Removed dead raw_la/raw_lb fields (unreferenced outside replaced header; LLR-AMB-08/11 undefined). Validity flags la_valid/lb_valid are consumed as per-cycle flags per LLR-LA-001/LLR-LB-001 (AMB-02 criteria undefined; FUN1_IsLaDataValid/FUN1_IsLbDataValid provide the structural range-based assessment helper with NULL guards); cfg parameter marked (void)cfg inside Process with explanatory comment to keep -Wextra clean without changing flag semantics (main.c TC01-TC03/TC11 contract). Remote-data-not-received (eqb_valid/eqc_valid=false) -> treated as not-match -> suppressed (minimal structural behavior matching main.c TC10, tied to LLR-AMB-11). Suppression = zero-initialized output (LLR-AMB-10 minimal). LC asymmetry (no validity branch) explicitly preserved per LLR-COM-003/AMB-04. Added #include <stddef.h> to header for NULL (old code got NULL transitively via <string.h>). Verification: gcc -Wall -Wextra -std=c11 -pedantic -c sr1.c clean; make sr1-all dual-compiler clean; ./build/sr1 24/24 pass. No main.c/API mismatch found."
+  },
+  "unresolved": [
+    "AMB-01: 周期语义未定义（周期时长、周期边界、触发机制、输出时刻）— 实现按 LLR-COM-001 以编译期常量 PROCESS_CYCLE_MS 参数化，一次函数调用=一个周期，未定义周期语义。",
+    "AMB-02: 有效性判定准则未定义 — 实现将 la_valid/lb_valid 作为调用方评估后传入的周期内布尔标志消费（LLR-LA-001/LLR-LB-001），并保留 FUN1_IsLaDataValid/FUN1_IsLbDataValid 结构式范围评估（含 NULL 保护），未补充其他判据。",
+    "AMB-03: 比较方法未定义 — 实现采用字段逐一相等比较（==），未定义容差/粒度/编码域。",
+    "AMB-04: LC 有效性不对称 — 设计意图已由人工评审确认（LLR-COM-003 固化）；实现显式保留 LC 路径无任何有效性标志/分支。",
+    "AMB-05: 错误处理缺失 — 条件不满足仅抑制输出（输出结构清零初始化），未定义错误指示/连续失败行为/抑制是否仅限当周期。",
+    "AMB-06: 数据类型/格式未定义 — 采用既有 double 字段（main.c 契约），未补充取值范围。",
+    "AMB-07: 数据来源未定义 — LA/LB/LC 待输出数据经 EQA_Data_t 传入，未定义生成方式。",
+    "LLR-AMB-08: 数据结构定义未定义 — 采用最小结构（main.c 契约字段）；从 EQA_Data_t 移除未使用的 raw_la/raw_lb 指针字段（旧头文件遗留、无任何引用、无 LLR 依据）。",
+    "LLR-AMB-09: PROCESS_CYCLE_MS 具体数值与命名未定义 — 保留既有基线值 10ms。",
+    "LLR-AMB-10: 抑制期间下游接口行为未定义 — 实现取最小静默：被抑制通道 out_*_valid=false 且 out_*=0。",
+    "LLR-AMB-11: 数据获取接口未定义 — 实现最小结构：远端数据未接收（eqb_valid/eqc_valid=false）→ 视为不一致/抑制（与 main.c TC10 契约一致）；提供 FUN1_StoreEqbData/FUN1_StoreEqcData 最小存储动作。"
+  ],
+  "objective_compliance": [],
+  "error": ""
+}

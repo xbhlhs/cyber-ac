@@ -1,0 +1,30 @@
+{
+  "task_id": "code_generation-T01",
+  "da_name": "code-gen",
+  "activity_type": "code_generation",
+  "description": "生成代码",
+  "task_name": "生成代码",
+  "inputs": {
+    "upstream": "code_generation"
+  },
+  "expected_outputs": [
+    "projects/sr1/src/sr1.c"
+  ],
+  "constraints": {
+    "dal_level": "D",
+    "applicable_objectives": [],
+    "coding_constraints": {
+      "language": "C",
+      "standard": "C11",
+      "compiler": "GCC",
+      "no_dynamic_memory": true
+    }
+  },
+  "dal_level": "D",
+  "development_path": "fusion",
+  "human_gate_before": false,
+  "human_gate_after": false,
+  "human_gate_type": "",
+  "created_at": "2026-08-08T15:11:46.491006",
+  "dag_version": 1
+}

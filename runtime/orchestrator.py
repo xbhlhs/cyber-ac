@@ -32,7 +32,7 @@ class Orchestrator:
         self.project_dir = self.workspace / "projects" / project_id if project_id else self.workspace
         self.evidence_dir = self.project_dir / "evidence"
         self.evidence_dir.mkdir(parents=True, exist_ok=True)
-        self.channel = MessageChannel(str(self.workspace / "queue"))
+        self.channel = MessageChannel(str(self.project_dir / ".pla/queue"))
         self.validator = ResultValidator()
         self._log_entries: list[dict] = []
         self.da_agents = {
@@ -70,7 +70,7 @@ class Orchestrator:
         return {"task_id":task.task_id,"queue_file":queue_path,"delegate_goal":goal,"da_name":task.da_name,"objectives_injected":len(objectives or [])}
 
     def _build_goal(self, task: TaskContext, objectives: list) -> str:
-        tools = get_da_tools(task.da_name, str(self.project_dir / "config.yaml") if self.project_id else None)
+        tools = get_da_tools(task.da_name, str(self.project_dir / "config.yaml") if self.project_id else None, self.project_id or "sr1")
         tools_str = ",".join(tools)
         obj_section = ""
         if objectives:
@@ -79,20 +79,21 @@ class Orchestrator:
                 obj_section += f"  - {o['id']}: {o['desc']}\n"
             obj_section += "\nDeclare compliance in objective_compliance array.\n"
         agent_file = self.da_agents.get(task.da_name,"")
+        queue_base = f"projects/{self.project_id}/.pla/queue" if self.project_id else ".pla/queue"
         return f"""You are {task.da_name}. Load {agent_file}.
 
 Available tools: {tools_str}
 
-Read Task Context: queue/outbox/{task.da_name}/task_{task.task_id}.json
+Read Task Context: {queue_base}/outbox/{task.da_name}/task_{task.task_id}.json
 {obj_section}
-Result → queue/inbox/{task.da_name}/result_{task.task_id}.json
+Result → {queue_base}/inbox/{task.da_name}/result_{task.task_id}.json
 Format: {{"task_id":"{task.task_id}","da_name":"{task.da_name}","status":"completed","artifacts":[...],"output":{{}},"process_data":{{"reasoning":"..."}},"unresolved":[...],"objective_compliance":[...],"error":""}}"""
 
     # ---- L1 collect ----
 
     def collect(self, da_name: str, task_id: str) -> Optional[ExecutionResult]:
         """从队列收集DA结果, 先验证格式"""
-        filepath = self.workspace / "queue" / "inbox" / da_name / f"result_{task_id}.json"
+        filepath = self.project_dir / ".pla/queue/inbox" / da_name / f"result_{task_id}.json"
         validation = self.validator.validate_file(str(filepath))
         if not validation["valid"]:
             self._log("L1_format_error", task_id, f"DA {da_name} 结果格式无效: {validation['issues']}")

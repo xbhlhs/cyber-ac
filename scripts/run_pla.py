@@ -45,15 +45,17 @@ def run(project_id: str, activity_type: str, dal_level: str = "D"):
         print(f"L3: {task.id} → {task.da_name} [{info['objectives_injected']} obj]")
 
     # Save dispatch info for PLA session
-    with open("queue/dispatch.json", "w") as f:
+    dispatch_path = Path(f"projects/{project_id}/.pla/dispatch.json")
+    dispatch_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(dispatch_path, "w") as f:
         json.dump([{
             "task_id": d["task_id"], "da_name": d["da_name"],
             "depends_on": plan.tasks[i].depends_on,
             "delegate_goal": d["delegate_goal"],
         } for i, d in enumerate(dispatch_infos)], f, ensure_ascii=False, indent=2)
 
-    print(f"\nDispatched {len(dispatch_infos)} tasks. Dispatch info: queue/dispatch.json")
-    print("PLA session: load skills/pla.md and use delegate_task for each task in order.")
+    print(f"\nDispatched {len(dispatch_infos)} tasks. Dispatch info: {dispatch_path}")
+    print(f"PLA session: load agents/pla/skill.md and use delegate_task for each task in order.")
     print("After each DA completes: orch.collect() → planner.assess() → continue/replan/human_gate")
 
     return plan, orch, planner

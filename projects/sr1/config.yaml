@@ -1,66 +1,21 @@
 # SR-1 项目配置
-#
-# 这是PLA/DA的输入——PLA读取此配置来编排SR-1的研发活动。
-# 约束分为两层:
-#   基础设施约束 → environment/config.yaml (PLA/DA基础设施如何运行)
-#   项目约束 → projects/sr1/config.yaml (SR-1项目特定要求)
+# 本项目强制模型驱动路径: 需要详细设计文档 + UML模型
 
 project:
   id: "SR-1"
   name: "FUN1数据对比输出"
   dal_level: "D"
 
-# 项目路径约束 — 融合体系L2决策输入
-# 这些约束可覆盖DAL默认推荐:
-#   model_policy: "as_dal" → 按DAL推荐(默认)
-#   model_policy: "required" → 强制模型(即使DAL D)
-#   model_policy: "text_only" → 纯文本(即使DAL A)
-#   skip_detailed_design: true → 跳过详细设计直接LLR→代码
+# 项目路径约束 — 强制模型驱动 + 文本模型混合表达
 project_path_constraints:
-  model_policy: "as_dal"
-  skip_detailed_design: "as_dal"
-  mixed_mode: "as_dal"
+  model_policy: "required"          # 强制模型 (即使DAL D)
+  skip_detailed_design: false       # 需要详细设计文档
+  mixed_mode: "text_model_mixed"    # 文本 + UML模型混合
 
 # 适用的DO-178C目标 (DAL D: 25 objectives, 无独立性)
 do178c_applicable:
   hlr_verification: ["A3-1","A3-2","A3-6"]
-  llr_verification: []           # DAL D不要求
-  coding_verification: []        # DAL D不要求
+  llr_verification: []
+  coding_verification: []
   testing: ["A6-1","A6-2","A6-5"]
-  structural_coverage: []        # DAL D不要求
-
-# 项目特定标准
-project_standards:
-  do178c: "../environment/constraints/do178c.yaml"
-  do331: "../environment/constraints/do331.yaml"
-
-# ============================================================
-# DA 工具分配 — 项目级覆盖
-#
-# 在此声明此项目对各DA工具的覆盖。
-# 未列出的DA沿用 environment/config.yaml 中的全局默认。
-#
-# 示例: 如果项目规范禁止UML而要求IDEF0:
-#   model-build:  [idef0, llm_api]
-#   model-check:  [idef0, llm_api]
-#
-# SR-1使用默认映射（model-build用plantuml, etc.），无需覆盖。
-# ============================================================
-# da_tools:                    # 取消注释以覆盖
-#   model-build:  [plantuml, llm_api]
-#   model-check:  [plantuml, llm_api]
-
-# 项目工程资源
-engineering_resources:
-  compiler: "gcc"
-  compiler_flags: ["-std=c11", "-Wall", "-Wextra"]
-  embedded_compiler: "arm-none-eabi-gcc"
-  target: "Cortex-M4"
-
-# 项目制品目录
-artifacts:
-  requirements: "requirements/"
-  models: "models/"
-  source: "src/"
-  tests: "tests/"
-  evidence: "evidence/"
+  structural_coverage: []

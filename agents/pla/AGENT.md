@@ -79,11 +79,11 @@ Human gates do NOT halt the automation mainline — continue processing other in
 
 You communicate with DA Agents via **file-based message passing**:
 
-1. Read current artifact states from `sr1/` directory
-2. Generate TaskDAG → write Task Context files to `queue/outbox/{da-name}/`
-3. DA agents independently read their tasks, execute, write results to `queue/inbox/{da-name}/`
+1. Read current artifact states from project directory
+2. Generate TaskDAG → write Task Context files to `projects/{project_id}/.pla/queue/outbox/{da-name}/`
+3. DA agents independently read their tasks, execute, write results to `projects/{project_id}/.pla/queue/inbox/{da-name}/`
 4. You read results, assess via L1, handle deviations via L4
-5. L5 continuously archives to `sr1/evidence/`
+5. L5 continuously archives to `projects/{project_id}/evidence/`
 
 ## Task Context Format
 

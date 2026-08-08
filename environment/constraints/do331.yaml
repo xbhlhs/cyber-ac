@@ -1,0 +1,38 @@
+# DO-331 约束 — 基于模型的开发和验证补充标准
+# 来源: RTCA DO-331 (2011)
+
+metadata:
+  standard: "RTCA DO-331"
+  version: "2011"
+
+model_types:
+  specification: "描述软件需求的抽象表达"
+  design: "描述软件内部结构的模型"
+
+planning:
+  model_standards_required: true
+  model_standards:
+    - "建模语言和表示法 (SysML等)"
+    - "模型结构、命名、文档规范"
+    - "模型与需求/代码追溯规则"
+    - "模型配置管理和变更控制规则"
+  tool_qualification: "模型工具需工具鉴定 TQL-1~5"
+
+development:
+  - "MB.5.1: 规格模型表达HLR须满足A3验证目标"
+  - "MB.5.2: 设计模型表达LLR须满足A4验证目标"
+  - "MB.5.3: 模型生成代码须工具鉴定或同等验证"
+
+verification:
+  - "模型审查: 检查模型符合建模标准"
+  - "模型仿真: 作为需求验证补充"
+  - "模型覆盖: 状态/迁移/决策覆盖"
+
+annex_tables:
+  - "MB.A-1"
+  - "MB.A-2"
+  - "MB.A-3"
+  - "MB.A-4"
+  - "MB.A-5"
+  - "MB.A-6"
+  - "MB.A-7"

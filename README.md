@@ -296,9 +296,10 @@ PLA在Task DAG中嵌入5类可控暂停点。闸门不阻塞自动化主线—�
 - GCC (本地编译)
 - arm-none-eabi-gcc 13+ (嵌入式交叉编译，可选)
 
-### 编译运行 SR-1
-
 ```bash
+# 安装 Python 依赖
+pip install -r requirements.txt
+
 # 克隆仓库
 git clone git@github.com:xbhlhs/cyber-ac.git
 cd fusion

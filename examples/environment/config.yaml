@@ -1,0 +1,248 @@
+# ============================================================
+# 工程环境配置 — 全量模板 (注释版)
+# ============================================================
+#
+# 本文件展示工程环境的所有可配置项及其语义说明。
+# 实际使用: 复制到 environment/config.yaml 并取消注释所需项目。
+#
+# 工程环境配置定义 PLA/DA Agent 运行的工程环境，不绑定任何具体项目。
+# 项目特定约束见 projects/{project_id}/config.yaml
+# ============================================================
+
+# ── 标准库路径 ──────────────────────────────────────────
+# PLA/DA各层按需引用的标准规范文件路径。
+# 路径支持:
+#   - 相对路径 (相对于本工作区根目录)
+#   - $HOME 环境变量展开
+#   - 绝对路径
+#
+# standards:
+#   do178c: "environment/constraints/do178c.yaml"        # DO-178C Annex A 目标表
+#   do331:  "environment/constraints/do331.yaml"         # DO-331 MBE补充标准
+#   arp4754b: "$HOME/wiki/raw/standards/SAE ARP 4754B-2023.pdf"
+#   arp4761a: "$HOME/wiki/raw/standards/SAE ARP 4761A-2023.pdf"
+#   ccar21: "$HOME/wiki/raw/standards/CCAR-21.pdf"       # 民用航空产品和零部件合格审定规定
+#   ccar25: "$HOME/wiki/raw/standards/CCAR-25.pdf"       # 运输类飞机适航标准
+#   # 可扩展: 添加项目需要的标准文件
+#   # custom_standard: "path/to/standard.pdf"
+
+# ── DA 能力池 (全局) ────────────────────────────────────
+# 定义所有可用的DA Agent及其能力类别。
+# 每个DA对应一个 AGENT.md 文件 (系统提示词 + 契约)。
+#
+# da_pool:
+#   # --- 理解分析类: 读入制品，提取结构化信息 ---
+#   - name: "req-analysis"           # DA内部名称，用于队列目录和工具分配键
+#     capability: "理解分析类"        # 能力类别: 理解分析 / 内容生成 / 模型处理 / 校验分析 / 关系处理 / 证据处理 / 工具执行
+#     agent_file: "agents/da-01/AGENT.md"
+#     description: "需求分析: SR → 结构化分析 → 标记歧义"
+#
+#   - name: "req-decomp"
+#     capability: "内容生成类"
+#     agent_file: "agents/da-02/AGENT.md"
+#     description: "需求分解: SR→HLR 或 HLR→LLR (每次一层)"
+#
+#   # --- 模型处理类: 构建和检查SysML/UML模型 ---
+#   - name: "model-build"
+#     capability: "模型处理类"
+#     agent_file: "agents/da-03/AGENT.md"
+#     description: "模型构建: 阶段感知 (S0-S3 SysML, S4-S6 UML)"
+#
+#   - name: "model-check"
+#     capability: "校验分析类"
+#     agent_file: "agents/da-04/AGENT.md"
+#     description: "模型检查: 语法和一致性验证"
+#
+#   # --- 内容生成类: 基于输入生成新制品 ---
+#   - name: "code-gen"
+#     capability: "内容生成类"
+#     agent_file: "agents/da-05/AGENT.md"
+#     description: "代码生成: UML详细设计模型 → C代码"
+#
+#   - name: "code-check"
+#     capability: "校验分析类"
+#     agent_file: "agents/da-06/AGENT.md"
+#     description: "代码检查: GCC编译 + 标准合规检查"
+#
+#   # --- 测试类 ---
+#   - name: "test-scenario"
+#     capability: "理解分析类"
+#     agent_file: "agents/da-07/AGENT.md"
+#     description: "测试场景分析: 从需求识别验证场景"
+#
+#   - name: "test-case-gen"
+#     capability: "内容生成类"
+#     agent_file: "agents/da-08/AGENT.md"
+#     description: "测试用例生成: 场景 → 测试用例"
+#
+#   - name: "test-proc-gen"
+#     capability: "内容生成类"
+#     agent_file: "agents/da-09/AGENT.md"
+#     description: "测试规程生成: 用例 → 可执行步骤"
+#
+#   - name: "test-exec"
+#     capability: "工具执行类"
+#     agent_file: "agents/da-10/AGENT.md"
+#     description: "测试执行: 编译 → 运行 → 写结果"
+#
+#   # --- 校验分析类 ---
+#   - name: "verify-analysis"
+#     capability: "校验分析类"
+#     agent_file: "agents/da-11/AGENT.md"
+#     description: "验证分析: 分析测试结果，验证DA-10输出"
+#
+#   # --- 关系/证据处理类 ---
+#   - name: "trace-maint"
+#     capability: "关系处理类"
+#     agent_file: "agents/da-12/AGENT.md"
+#     description: "追溯关系维护: 构建追溯矩阵 (不生成新内容)"
+#
+#   - name: "review-materials"
+#     capability: "证据处理类"
+#     agent_file: "agents/da-13/AGENT.md"
+#     description: "评审材料整理: 收集制品 → 评审材料"
+#
+#   - name: "airworth-evidence"
+#     capability: "证据处理类"
+#     agent_file: "agents/da-14/AGENT.md"
+#     description: "适航证据整理: 打包适航证据"
+
+# ── 工程资源池 ──────────────────────────────────────────
+# 系统可用的所有工具，分为三类接入方式。
+# 新增工具需要在 tools/registry.py 中注册。
+#
+# engineering_resources:
+#   cli:                          # 命令行工具 (含提供CLI接口的桌面端工具)
+#     - gcc                       #   GNU C Compiler
+#     - arm-none-eabi-gcc         #   ARM嵌入式交叉编译器
+#     - plantuml                  #   PlantUML模型渲染
+#     - git                       #   版本管理
+#     - make                      #   构建系统
+#     # 可按需扩展:
+#     # - cmake
+#     # - cppcheck                #   静态分析
+#     # - gcov                    #   代码覆盖率
+#     # - idef0                   #   IDEF0建模工具
+#     # - capella                 #   Capella MBSE工具
+#
+#   api:                          # 服务化资源 (LLM推理 + 存量系统集成)
+#     - llm_api                   #   大语言模型推理
+#     - req_import                #   外部需求导入 (ReqIF/docx/REST)
+#     - baseline_sync             #   基线同步到外部平台
+#     # 可按需扩展:
+#     # - docx_parser             #   docx文档解析
+#     # - trace_sync              #   追溯数据同步
+#     # - test_platform_api       #   测试平台接口
+#
+#   human:                        # 人工评审角色
+#     - 项目技术负责人
+#     - 质量保证人员
+#     - 适航联络人员
+#     # 可按需扩展:
+#     # - 系统工程师
+#     # - 软件组长
+
+# ── DA 工具分配 — 全局默认映射 ──────────────────────────
+# 每个DA使用的具体工具在这里定义。
+# 项目可通过 projects/{id}/config.yaml 覆盖。
+#
+# 工具分为两类:
+#   base — 所有DA都有的基础工具 (通信、文件操作、搜索)
+#   da   — 每个DA的专用工具
+#
+# 项目只需声明覆盖项，未声明的DA沿用此默认映射。
+# 例如: 项目规范禁止UML → 覆盖 model-build 的 tools 为 [idef0, llm_api]
+#
+# da_tools:
+#   base:                        # 所有DA共享的基础工具
+#     - read_file
+#     - write_file
+#     - terminal
+#     - search_files
+#
+#   da:                          # 每个DA的专用工具 (按 da_pool 中的 name 匹配)
+#     req-analysis:
+#       - llm_api                #   需求分析需要LLM语义理解
+#     req-decomp:
+#       - llm_api                #   需求分解需要LLM推理
+#     model-build:
+#       - plantuml               #   模型渲染
+#       - llm_api                #   LLM辅助建模
+#     model-check:
+#       - plantuml               #   模型语法检查
+#       - llm_api                #   LLM一致性分析
+#     code-gen:
+#       - gcc                    #   编译验证
+#       - llm_api                #   LLM代码生成
+#     code-check:
+#       - gcc                    #   编译 + 静态分析
+#       # 可扩展:
+#       # - cppcheck
+#       # - misra_checker
+#     test-scenario:
+#       - llm_api                #   场景识别
+#     test-case-gen:
+#       - llm_api                #   用例生成
+#     test-proc-gen:
+#       - llm_api                #   规程生成
+#     test-exec:
+#       - gcc                    #   编译源代码
+#       - make                   #   构建系统
+#     verify-analysis:
+#       - llm_api                #   结果分析
+#     trace-maint: []            #   追溯维护: 纯文件操作，无需额外工具
+#     review-materials:
+#       - llm_api                #   材料整理
+#     airworth-evidence: []      #   证据打包: 纯文件操作
+
+# ── 人工闸门 (基础设施级) ────────────────────────────────
+# PLA在编排时根据DAL级别决定是否触发闸门。
+# 闸门定义在基础设施层——PLA L2动态决策是否插入。
+#
+# human_gates:
+#   - gate: "initial_plan"             # 初始计划授权
+#     trigger: "DAL A/B required"      #   触发条件描述
+#     # 可扩展字段:
+#     # default_timeout_hours: 72      #   超时自动通过 (可选)
+#     # auto_approve_dal: [D, E]       #   低DAL自动通过闸门
+#     # notify_roles:                  #   通知角色列表
+#     #   - 项目技术负责人
+#
+#   - gate: "da_path_selection"        # DA路径选择确认
+#     trigger: "LLM path + DAL >= C"
+#
+#   - gate: "verification_confirm"     # 验证确认
+#     trigger: "test gap or deviation exceeded"
+#
+#   - gate: "change_impact"            # 变更影响评估
+#     trigger: "cross-layer impact detected"
+#
+#   - gate: "evidence_archive"         # 证据归档签批
+#     trigger: "L5 evidence package ready"
+
+# ── 消息通道 ─────────────────────────────────────────────
+# PLA与DA之间的文件消息通道配置。
+#
+# queue:
+#   outbox: "projects/sr1/.pla/queue/outbox/"   # PLA → DA 任务输出目录
+#   inbox: "projects/sr1/.pla/queue/inbox/"     # DA → PLA 结果输入目录
+#   # 可扩展:
+#   # archive: "queue/archive/"      # 已完成任务归档目录
+#   # max_retries: 3                 # DA执行失败最大重试次数
+#   # retry_delay_seconds: 30        # 重试间隔
+
+# ── 收敛控制参数 ─────────────────────────────────────────
+# convergence:
+#   max_iterations: 5                # L2-L4 闭环最大迭代次数 (超过触发人工干预)
+#   deviation_threshold:             # 偏差阈值
+#     quality_gap: "medium"          #   质量缺口: low/medium/high (超过触发L4校正)
+#     constraint_conflict: "any"     #   约束冲突: any (任何冲突立即触发)
+#     coverage_gap: 0.9              #   覆盖缺口: 低于90%触发
+#   auto_approve_below_dal: "D"      # 低于此DAL级别自动通过闸门
+
+# ── 日志与审计 ───────────────────────────────────────────
+# logging:
+#   level: "INFO"                    # DEBUG / INFO / WARNING / ERROR
+#   format: "json"                   # json / text
+#   output: "evidence/pla_audit.log" # PLA审计日志路径
+#   da_logs: "evidence/da_logs/"     # DA执行日志目录

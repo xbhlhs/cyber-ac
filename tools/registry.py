@@ -145,14 +145,14 @@ def _load_yaml(path: str) -> dict:
     return {}
 
 
-def get_da_tools(da_name: str, project_config_path: str = None) -> list[str]:
+def get_da_tools(da_name: str, project_config_path: str = None, project_id: str = "sr1") -> list[str]:
     """
     获取指定DA在当前项目中的可用工具列表。
 
-    从 environment/config.yaml 加载全局默认，
+    从 projects/{project_id}/.pla/environment/config.yaml 加载全局默认，
     如果提供了 project_config_path，则从项目配置中加载覆盖。
     """
-    env_config = _load_yaml("environment/config.yaml")
+    env_config = _load_yaml(f"projects/{project_id}/.pla/environment/config.yaml")
     da_tools_cfg = env_config.get("da_tools", {})
     base_tools = da_tools_cfg.get("base", ["read_file", "write_file", "terminal", "search_files"])
     global_da = da_tools_cfg.get("da", {})

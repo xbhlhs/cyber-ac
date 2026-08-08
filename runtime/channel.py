@@ -27,7 +27,7 @@ from runtime.protocol import TaskContext, ExecutionResult
 class MessageChannel:
     """文件消息通道"""
 
-    def __init__(self, queue_dir: str = "queue"):
+    def __init__(self, queue_dir: str = "projects/sr1/.pla/queue"):
         self.queue_dir = Path(queue_dir)
         self.outbox_dir = self.queue_dir / "outbox"
         self.inbox_dir = self.queue_dir / "inbox"
@@ -45,7 +45,7 @@ class MessageChannel:
         """
         PLA向DA发送任务。
 
-        将TaskContext写入 queue/outbox/{da_name}/task_{task_id}.json
+        将TaskContext写入 projects/{project}/.pla/queue/outbox/{da_name}/task_{task_id}.json
         返回文件路径。
         """
         da_dir = self.outbox_dir / task.da_name
@@ -69,7 +69,7 @@ class MessageChannel:
         """
         DA向PLA返回执行结果。
 
-        写入 queue/inbox/{da_name}/result_{task_id}.json
+        写入 projects/{project}/.pla/queue/inbox/{da_name}/result_{task_id}.json
         """
         da_dir = self.inbox_dir / result.da_name
         da_dir.mkdir(parents=True, exist_ok=True)

@@ -13,9 +13,9 @@ import json
 from pathlib import Path
 
 
-def read_task(da_name: str, task_id: str) -> dict:
+def read_task(da_name: str, task_id: str, project_id: str = "sr1") -> dict:
     """读取PLA派发的任务"""
-    task_path = Path(f"queue/outbox/{da_name}/task_{task_id}.json")
+    task_path = Path(f"projects/{project_id}/.pla/queue/outbox/{da_name}/task_{task_id}.json")
     if not task_path.exists():
         print(f"Task not found: {task_path}")
         return None
@@ -23,9 +23,9 @@ def read_task(da_name: str, task_id: str) -> dict:
         return json.load(f)
 
 
-def write_result(da_name: str, task_id: str, result: dict):
+def write_result(da_name: str, task_id: str, project_id: str = "sr1"):
     """写入执行结果"""
-    inbox = Path(f"queue/inbox/{da_name}")
+    inbox = Path(f"projects/{project_id}/.pla/queue/inbox/{da_name}")
     inbox.mkdir(parents=True, exist_ok=True)
     result_path = inbox / f"result_{task_id}.json"
     with open(result_path, "w") as f:
@@ -33,9 +33,9 @@ def write_result(da_name: str, task_id: str, result: dict):
     print(f"Result written: {result_path}")
 
 
-def run(da_name: str, task_id: str):
+def run(da_name: str, task_id: str, project_id: str = "sr1"):
     """DA Agent入口: 读任务→执行→写结果"""
-    task = read_task(da_name, task_id)
+    task = read_task(da_name, task_id, project_id)
     if not task:
         return
 
@@ -56,11 +56,15 @@ def run(da_name: str, task_id: str):
         print(f"Agent definition: {agent_file}")
 
     print("\n=== DA READY ===")
-    print(f"Load agent definition, read task context, execute, write result to queue/inbox/{da_name}/result_{task_id}.json")
+    print(f"Load agent definition, read task context, execute, write result to projects/{project_id}/.pla/queue/inbox/{da_name}/result_{task_id}.json")
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         print("Usage: python scripts/run_da.py <da_name> <task_id> [--project sr1]")
         sys.exit(1)
-    run(sys.argv[1], sys.argv[2])
+    project = "sr1"
+    if "--project" in sys.argv:
+        idx = sys.argv.index("--project")
+        project = sys.argv[idx+1]
+    run(sys.argv[1], sys.argv[2], project)

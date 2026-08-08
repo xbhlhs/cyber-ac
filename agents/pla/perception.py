@@ -58,7 +58,7 @@ class Perception:
         constraints = {}
 
         # DO-178C
-        cp = Path("environment/constraints/do178c.yaml")
+        cp = self.project_dir / ".pla/environment/constraints/do178c.yaml"
         if cp.exists():
             with open(cp) as f:
                 do178c = yaml.safe_load(f)
@@ -66,7 +66,7 @@ class Perception:
             constraints["do178c_ref"] = str(cp)
 
         # 公司规范
-        company_path = Path("environment/constraints/company.yaml")
+        company_path = self.project_dir / ".pla/environment/constraints/company.yaml"
         if company_path.exists():
             with open(company_path) as f:
                 constraints["company"] = yaml.safe_load(f).get("company_standards", {})

@@ -1,0 +1,62 @@
+# ============================================================
+# .gitattributes — Fusion Development System
+# ============================================================
+
+# --- Line ending normalization ---
+# Auto-detect text files and normalize to LF on commit
+* text=auto
+
+# --- Source code ---
+*.c      text eol=lf diff=c
+*.h      text eol=lf diff=c
+*.py     text eol=lf diff=python
+*.yaml   text eol=lf
+*.yml    text eol=lf
+*.json   text eol=lf
+*.md     text eol=lf
+*.txt    text eol=lf
+Makefile text eol=lf
+
+# --- Shell scripts ---
+*.sh     text eol=lf
+
+# --- Binary files ---
+*.o      binary
+*.out    binary
+*.a      binary
+*.so     binary
+*.pyc    binary
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.svg    binary
+*.pdf    binary
+*.zip    binary
+*.tar    binary
+*.gz     binary
+*.7z     binary
+
+# --- Linguist overrides (GitHub language statistics) ---
+# Mark AGENT.md files as documentation, not code
+agents/**/AGENT.md   linguist-detectable=false linguist-documentation
+AGENTS.md            linguist-detectable=false linguist-documentation
+
+# Mark generated/queue files as vendored
+queue/**             linguist-generated=true linguist-detectable=false
+
+# Mark evidence as documentation
+evidence/**          linguist-documentation
+projects/*/evidence/**  linguist-documentation
+
+# Mark config as data
+environment/config.yaml            linguist-language=YAML linguist-detectable=false
+projects/*/config.yaml             linguist-language=YAML linguist-detectable=false
+environment/constraints/*.yaml     linguist-language=YAML linguist-detectable=false
+
+# Makefile root path fix for GitHub stats
+Makefile             linguist-language=Makefile
+
+# --- SysML / UML model files ---
+*.sysml  text eol=lf linguist-language=Text
+*.puml   text eol=lf linguist-language=PlantUML

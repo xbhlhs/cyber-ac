@@ -1,0 +1,352 @@
+# ============================================================
+# DO-178C 约束模板 — 全量配置 (注释版)
+# ============================================================
+#
+# 来源: RTCA DO-178C (2011) Annex A Tables A-1~A-10
+# 符号: ● = 满足目标(需独立性) ○ = 满足目标 blank = 不要求
+#
+# 本文件展示完整可配的目标表。实际使用:
+#   复制到 environment/constraints/do178c.yaml 并修改。
+# ============================================================
+
+# ── 元数据 ───────────────────────────────────────────────
+# metadata:
+#   standard: "RTCA DO-178C"
+#   version: "2011"
+#   doc_id: "DO-178C"                 # 文档编号
+#   title: "Software Considerations in Airborne Systems and Equipment Certification"
+#   publisher: "RTCA, Inc."
+#   url: "https://www.rtca.org/"
+
+# ── DAL 等级定义 (Section 2.3.3) ─────────────────────────
+# 故障条件分类 → DAL等级 → 目标数量 → 独立性要求
+#
+# dal_levels:
+#   A:
+#     failure_condition: "Catastrophic"        # 灾难性: 妨碍安全飞行和着陆
+#     description: "失效将导致灾难性后果"
+#     objective_count: 66
+#     independence_required: true
+#     with_independence: 25                     # 需要独立性的目标数
+#
+#   B:
+#     failure_condition: "Hazardous/Severe-Major"  # 危害性/严重重大
+#     description: "失效将严重影响安全裕度或机组能力"
+#     objective_count: 65
+#     independence_required: true
+#     with_independence: 14
+#
+#   C:
+#     failure_condition: "Major"                # 重大
+#     description: "失效将显著降低安全裕度或增加机组工作负担"
+#     objective_count: 58
+#     independence_required: false
+#     with_independence: 2
+#
+#   D:
+#     failure_condition: "Minor"                # 轻微
+#     description: "失效不会显著降低飞机安全性"
+#     objective_count: 25
+#     independence_required: false
+#     with_independence: 0
+#
+#   E:
+#     failure_condition: "No Safety Effect"     # 无安全影响
+#     description: "失效不影响飞机运行安全"
+#     objective_count: 0
+#     independence_required: false
+#     with_independence: 0
+
+# ── 六大软件生命周期过程 (Section 3.1) ──────────────────
+#
+# lifecycle_processes:
+#   - planning                            # 计划过程
+#   - development_requirements            # 开发过程-需求
+#   - development_design                  # 开发过程-设计
+#   - development_coding                  # 开发过程-编码
+#   - development_integration            # 开发过程-集成
+#   - verification                        # 验证过程
+#   - configuration_management            # 配置管理
+#   - quality_assurance                   # 质量保证
+#   - certification_liaison               # 审定联络
+
+# ============================================================
+# Annex A 过程目标
+# ============================================================
+# 字段说明:
+#   id             — 目标编号 (e.g. A3-1)
+#   desc           — 目标描述
+#   applicable_DAL — 哪些DAL等级适用此目标
+#   independence   — 哪些DAL等级需要独立性验证
+#   do178c_ref     — DO-178C原文引用
+# ============================================================
+
+# ── Table A-3: HLR 需求验证目标 (§6.3.1) ─────────────────
+# 验证高层需求与系统需求的符合性。
+#
+# hlr_verification:
+#   - id: "A3-1"
+#     desc: "HLR comply with system requirements"
+#     applicable_DAL: [A, B, C, D]
+#     independence: [A, B]
+#     do178c_ref: "6.3.1.a"
+#     evidence_type: "review"              # review / analysis / test
+#
+#   - id: "A3-2"
+#     desc: "HLR are accurate and consistent"
+#     applicable_DAL: [A, B, C, D]
+#     independence: [A, B]
+#     do178c_ref: "6.3.1.b"
+#     evidence_type: "review"
+#
+#   - id: "A3-3"
+#     desc: "HLR are compatible with target computer"
+#     applicable_DAL: [A, B]
+#     independence: []
+#     do178c_ref: "6.3.1.c"
+#     evidence_type: "analysis"
+#
+#   - id: "A3-4"
+#     desc: "HLR are verifiable"
+#     applicable_DAL: [A, B, C]
+#     independence: []
+#     do178c_ref: "6.3.1.d"
+#     evidence_type: "review"
+#
+#   - id: "A3-5"
+#     desc: "HLR conform to standards"
+#     applicable_DAL: [A, B, C]
+#     independence: []
+#     do178c_ref: "6.3.1.e"
+#     evidence_type: "review"
+#
+#   - id: "A3-6"
+#     desc: "HLR are traceable to system requirements"
+#     applicable_DAL: [A, B, C, D]
+#     independence: []
+#     do178c_ref: "6.3.1.f"
+#     evidence_type: "analysis"
+#
+#   - id: "A3-7"
+#     desc: "Algorithms are accurate"
+#     applicable_DAL: [A, B, C]
+#     independence: [A, B]
+#     do178c_ref: "6.3.1.g"
+#     evidence_type: "analysis"
+
+# ── Table A-4: LLR 设计验证目标 (§6.3.2) ─────────────────
+#
+# llr_verification:
+#   - id: "A4-1"
+#     desc: "LLR comply with HLR"
+#     applicable_DAL: [A, B, C]
+#     independence: [A, B]
+#     do178c_ref: "6.3.2.a"
+#     evidence_type: "review"
+#
+#   - id: "A4-2"
+#     desc: "LLR are accurate and consistent"
+#     applicable_DAL: [A, B, C]
+#     independence: [A, B]
+#     do178c_ref: "6.3.2.b"
+#     evidence_type: "review"
+#
+#   # A4-3 and A4-4 intentionally absent (not in DO-178C)
+#
+#   - id: "A4-5"
+#     desc: "LLR conform to standards"
+#     applicable_DAL: [A, B, C]
+#     independence: []
+#     do178c_ref: "6.3.2.e"
+#     evidence_type: "review"
+#
+#   - id: "A4-6"
+#     desc: "LLR are traceable to HLR"
+#     applicable_DAL: [A, B, C]
+#     independence: []
+#     do178c_ref: "6.3.2.f"
+#     evidence_type: "analysis"
+#
+#   - id: "A4-7"
+#     desc: "Algorithms are accurate"
+#     applicable_DAL: [A, B, C]
+#     independence: [A, B]
+#     do178c_ref: "6.3.2.g"
+#     evidence_type: "analysis"
+
+# ── Table A-5: 编码+集成验证目标 (§6.3.4) ────────────────
+#
+# coding_verification:
+#   - id: "A5-1"
+#     desc: "Source Code complies with LLR"
+#     applicable_DAL: [A, B, C]
+#     independence: [A, B]
+#     do178c_ref: "6.3.4.a"
+#     evidence_type: "review"
+#
+#   - id: "A5-2"
+#     desc: "Source Code complies with software architecture"
+#     applicable_DAL: [A, B, C]
+#     independence: [A]
+#     do178c_ref: "6.3.4.b"
+#     evidence_type: "analysis"
+#
+#   # A5-3 omitted
+#
+#   - id: "A5-4"
+#     desc: "Source Code conforms to standards"
+#     applicable_DAL: [A, B, C]
+#     independence: []
+#     do178c_ref: "6.3.4.d"
+#     evidence_type: "review"
+#
+#   - id: "A5-5"
+#     desc: "Source Code is traceable to LLR"
+#     applicable_DAL: [A, B, C]
+#     independence: []
+#     do178c_ref: "6.3.4.e"
+#     evidence_type: "analysis"
+#
+#   - id: "A5-6"
+#     desc: "Source Code is accurate and consistent"
+#     applicable_DAL: [A, B, C]
+#     independence: [A]
+#     do178c_ref: "6.3.4.f"
+#     evidence_type: "review"
+
+# ── Table A-6: 测试目标 (§6.4) ────────────────────────────
+# 需求基测试: 基于HLR和LLR的测试。
+#
+# testing:
+#   - id: "A6-1"
+#     desc: "Executable Object Code complies with HLR (normal range)"
+#     applicable_DAL: [A, B, C, D]
+#     do178c_ref: "6.4.a"
+#     test_type: "normal_range"
+#     coverage_required: false
+#
+#   - id: "A6-2"
+#     desc: "Executable Object Code is robust with HLR (robustness)"
+#     applicable_DAL: [A, B, C, D]
+#     do178c_ref: "6.4.b"
+#     test_type: "robustness"
+#     coverage_required: false
+#
+#   - id: "A6-3"
+#     desc: "Executable Object Code complies with LLR (normal range)"
+#     applicable_DAL: [A, B, C]
+#     do178c_ref: "6.4.c"
+#     test_type: "normal_range"
+#     coverage_required: false
+#
+#   - id: "A6-4"
+#     desc: "Executable Object Code is robust with LLR (robustness)"
+#     applicable_DAL: [A, B, C]
+#     do178c_ref: "6.4.d"
+#     test_type: "robustness"
+#     coverage_required: false
+#
+#   - id: "A6-5"
+#     desc: "Executable Object Code is compatible with target computer"
+#     applicable_DAL: [A, B, C, D]
+#     do178c_ref: "6.4.e"
+#     test_type: "compatibility"
+#     coverage_required: false
+
+# ── Table A-7: 结构覆盖目标 (§6.4.4) ─────────────────────
+# 结构覆盖要求随DAL递增。
+#
+# structural_coverage:
+#   - id: "A7-5"
+#     desc: "Modified Condition/Decision Coverage (MC/DC)"
+#     applicable_DAL: [A]
+#     coverage_type: "MC/DC"
+#     description: "每个条件的独立影响已展示"
+#
+#   - id: "A7-6"
+#     desc: "Decision Coverage"
+#     applicable_DAL: [A, B]
+#     coverage_type: "decision"
+#     description: "每个入口/出口点至少执行一次，每个决策的所有可能结果至少执行一次"
+#
+#   - id: "A7-7"
+#     desc: "Statement Coverage"
+#     applicable_DAL: [A, B, C]
+#     coverage_type: "statement"
+#     description: "每个语句至少执行一次"
+#
+#   - id: "A7-8"
+#     desc: "Data Coupling and Control Coupling"
+#     applicable_DAL: [A, B, C]
+#     coverage_type: "coupling"
+#     description: "数据耦合和控制耦合分析"
+
+# ============================================================
+# 约束加载映射 — PLA各层使用约束的方式
+# ============================================================
+# PLA的L1~L5层在需要时按以下映射加载约束子集。
+#
+# layer_constraint_usage:
+#   L1_perception:
+#     purpose: "检查DA输出物是否满足对应DAL等级的目标要求"
+#     loads:
+#       - hlr_verification
+#       - llr_verification
+#       - coding_verification
+#       - testing
+#       - structural_coverage
+#     usage: "根据当前活动类型和DAL等级，筛选applicable_DAL包含当前DAL的目标，逐项检查"
+#
+#   L3_execution:
+#     purpose: "将DA执行相关的约束注入Task Context"
+#     loads:
+#       - hlr_verification
+#       - llr_verification
+#       - coding_verification
+#     usage: "在dispatch前，将当前DAL等级适用的目标作为constraints字段注入TaskContext"
+#
+#   L4_correction:
+#     purpose: "偏差根因分析时引用标准条款作为判定依据"
+#     loads:
+#       - hlr_verification
+#       - llr_verification
+#       - coding_verification
+#       - testing
+#     usage: "当发现偏差时，引用对应的do178c_ref条款进行归类"
+#
+#   L5_steady_state:
+#     purpose: "证据包归档需对齐DO-178C Section 11数据项要求"
+#     loads:
+#       - full_annex_a
+#       - section_11_data_items
+#     usage: "归档时检查CC1/CC2数据项完整性"
+
+# ── Section 11 软件生命周期数据 ────────────────────────────
+# DO-178C §11.1~11.21 定义的数据项分类。
+#
+# section_11_data_items:
+#   CC1:                    # 审定联络数据 (Configuration Control Category 1)
+#     - "11.1  Plan for Software Aspects of Certification (PSAC)"
+#     - "11.16 Software Configuration Index (SCI)"
+#     - "11.15 Software Life Cycle Environment Configuration Index (SECI)"
+#     # 可扩展:
+#     # - "11.2  Software Development Plan (SDP)"
+#     # - "11.3  Software Verification Plan (SVP)"
+#     # - "11.4  Software Configuration Management Plan (SCMP)"
+#     # - "11.5  Software Quality Assurance Plan (SQAP)"
+#     # - "11.7  Software Requirements Standards"
+#     # - "11.8  Software Design Standards"
+#     # - "11.9  Software Code Standards"
+#
+#   CC2:                    # 过程记录数据 (Configuration Control Category 2)
+#     - "11.14 Software Verification Results"
+#     - "11.19 Software Quality Assurance Records"
+#     - "11.18 Software Configuration Management Records"
+#     - "11.17 Problem Reports"
+#     - "11.21 Trace Data"
+#     - "11.20 Software Accomplishment Summary"
+#     # 可扩展:
+#     # - "11.10 Software Requirements Data (SR)"
+#     # - "11.11 Design Description"
+#     # - "11.12 Source Code"
+#     # - "11.13 Executable Object Code"

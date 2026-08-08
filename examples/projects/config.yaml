@@ -1,0 +1,239 @@
+# ============================================================
+# 项目配置模板 — 全量配置 (注释版)
+# ============================================================
+#
+# 本文件展示项目级配置的所有可配置项及语义说明。
+# 实际使用: 复制到 projects/{project_id}/config.yaml 并修改。
+#
+# 项目配置是PLA/DA的输入——PLA读取此配置来编排该项目的研发活动。
+# 约束分为两层:
+#   基础设施约束 → environment/config.yaml (PLA/DA基础设施如何运行)
+#   项目约束 → projects/{project_id}/config.yaml (项目特定要求)
+# ============================================================
+
+# ── 项目基本信息 ─────────────────────────────────────────
+# project:
+#   id: "SR-2"                       # 项目唯一标识 (与目录名一致)
+#   name: "YOUR_FUNCTION_NAME"       # 人可读项目名称 (中文)
+#   dal_level: "C"                   # DAL级别: A / B / C / D / E
+#                                    # 决定: 验证粒度、目标数量、人工介入程度
+#   description: "项目功能简述"       # 可选: 供PLA L1感知层理解项目上下文
+#   certification_basis:             # 可选: 审定基础
+#     aircraft_type: "Part 25"       #   飞机类型: Part 23 / Part 25 / Part 27 / Part 29
+#     certification_authority: "CAAC"  # 审定机构: CAAC / FAA / EASA
+#     applicable_cs: ["CCAR-25"]     #   适用规章
+
+# ── 项目路径约束 (PLA L2决策输入) ────────────────────────
+# 这些约束可覆盖DAL默认推荐。
+# 优先级: 项目约束 > 公司约束 > DAL默认
+#
+# project_path_constraints:
+#
+#   # ── 模型策略 ────────────────────────────────────
+#   # 可选值:
+#   #   "as_dal"      — 按DAL推荐 (默认)
+#   #   "required"    — 强制模型 (即使DAL D/E，全部走模型路径)
+#   #   "text_only"   — 纯文本 (即使DAL A/B，跳过建模)
+#   #   "model_optional" — 继承公司级策略
+#   model_policy: "as_dal"
+#
+#   # ── 跳过详细设计 ────────────────────────────────
+#   # 可选值:
+#   #   "as_dal"   — 按DAL推荐 (DAL C+需要LLR，DAL D/E可跳过)
+#   #   true       — 强制跳过LLR→代码阶段，从HLR直接生成代码
+#   #   false      — 强制生成LLR，即使DAL E
+#   skip_detailed_design: "as_dal"
+#
+#   # ── 混合模式 ────────────────────────────────────
+#   # 可选值:
+#   #   "as_dal"          — 按DAL推荐
+#   #   "text_only"       — 仅文本 (不生成任何模型)
+#   #   "model_only"      — 仅模型 (SysML/UML为主要制品)
+#   #   "text_model_mixed" — 文本+模型混合 (适用fusion路径)
+#   mixed_mode: "as_dal"
+#
+#   # ── 路径偏好 ────────────────────────────────────
+#   # 可选值:
+#   #   "as_dal"     — 按DAL推荐
+#   #   "model_first" — 模型驱动优先 (即使LLM可用，优先尝试模型路径)
+#   #   "llm_first"  — LLM驱动优先
+#   path_preference: "as_dal"
+
+# ── 适用的DO-178C目标 ────────────────────────────────────
+# 列出本项目适用的目标ID。
+# 留空表示该类别在本DAL下不要求。
+# 参考: environment/constraints/do178c.yaml 中的目标定义。
+#
+# do178c_applicable:
+#   hlr_verification:               # Table A-3: HLR需求验证
+#     - "A3-1"                      #   HLR comply with system requirements
+#     - "A3-2"                      #   HLR are accurate and consistent
+#     - "A3-6"                      #   HLR are traceable to system requirements
+#     # DAL A/B额外:
+#     # - "A3-3"                    #   目标机兼容性
+#     # DAL A/B/C额外:
+#     # - "A3-4"                    #   可验证性
+#     # - "A3-5"                    #   符合标准
+#     # - "A3-7"                    #   算法准确性
+#
+#   llr_verification: []            # Table A-4: LLR设计验证 (DAL D不要求)
+#     # DAL C适用:
+#     # - "A4-1"                    #   LLR comply with HLR
+#     # - "A4-2"                    #   LLR accurate and consistent
+#     # - "A4-5"                    #   LLR conform to standards
+#     # - "A4-6"                    #   LLR traceable to HLR
+#     # - "A4-7"                    #   Algorithms accurate
+#     # DAL A/B额外需独立性: A4-1, A4-2, A4-7
+#
+#   coding_verification: []         # Table A-5: 编码验证 (DAL D不要求)
+#     # DAL C适用:
+#     # - "A5-1"                    #   Source Code complies with LLR
+#     # - "A5-2"                    #   Source Code complies with architecture
+#     # - "A5-4"                    #   Source Code conforms to standards
+#     # - "A5-5"                    #   Source Code traceable to LLR
+#     # - "A5-6"                    #   Source Code accurate and consistent
+#
+#   testing:                        # Table A-6: 需求基测试
+#     - "A6-1"                      #   EOC complies with HLR (normal)
+#     - "A6-2"                      #   EOC robust with HLR (robustness)
+#     - "A6-5"                      #   EOC compatible with target computer
+#     # DAL C额外:
+#     # - "A6-3"                    #   EOC complies with LLR (normal)
+#     # - "A6-4"                    #   EOC robust with LLR (robustness)
+#
+#   structural_coverage: []         # Table A-7: 结构覆盖 (DAL D不要求)
+#     # DAL C适用:
+#     # - "A7-7"                    #   Statement Coverage
+#     # - "A7-8"                    #   Data Coupling and Control Coupling
+#     # DAL B额外:
+#     # - "A7-6"                    #   Decision Coverage
+#     # DAL A额外:
+#     # - "A7-5"                    #   MC/DC
+
+# ── 项目特定标准引用 ─────────────────────────────────────
+# project_standards:
+#   do178c: "path/to/do178c.yaml"           # DO-178C约束文件路径
+#   do331: "path/to/do331.yaml"             # DO-331约束文件路径 (模型项目)
+#   # 可扩展: 引用项目特定标准
+#   # coding_std: "path/to/coding_standard.yaml"
+#   # company: "path/to/company.yaml"
+
+# ── DA 工具分配 — 项目级覆盖 ─────────────────────────────
+# 在此声明此项目对各DA工具的覆盖。
+# 未列出的DA沿用 environment/config.yaml 中的全局默认。
+#
+# 示例场景:
+#   项目规范禁止UML → 覆盖模型相关DA:
+#     model-build:  [idef0, llm_api]
+#     model-check:  [idef0, llm_api]
+#
+#   项目需要MISRA-C检查 → 扩展代码检查工具:
+#     code-check: [gcc, misra_checker]
+#
+#   项目需硬件在环测试 → 扩展测试执行:
+#     test-exec: [gcc, make, hil_interface]
+#
+# da_tools:
+#   # base: []                    # 覆盖全局base工具 (通常不需要)
+#   da:
+#     req-analysis:  [llm_api]
+#     req-decomp:    [llm_api]
+#     model-build:   [plantuml, llm_api]
+#     model-check:   [plantuml, llm_api]
+#     code-gen:      [gcc, llm_api]
+#     code-check:    [gcc]
+#     test-scenario: [llm_api]
+#     test-case-gen: [llm_api]
+#     test-proc-gen: [llm_api]
+#     test-exec:     [gcc, make]
+#     verify-analysis: [llm_api]
+#     trace-maint:   []
+#     review-materials: [llm_api]
+#     airworth-evidence: []
+
+# ── 项目工程资源 ─────────────────────────────────────────
+# 项目使用的具体工程资源规格。
+#
+# engineering_resources:
+#   compiler: "gcc"                       # 本地编译器
+#   compiler_version: "13.3.0"            #   编译器版本要求
+#   compiler_flags:                       #   编译选项
+#     - "-std=c11"
+#     - "-Wall"
+#     - "-Wextra"
+#     - "-Werror"                         #   警告即错误
+#     - "-pedantic"
+#     # MISRA合规项目额外:
+#     # - "-Wconversion"
+#     # - "-Wshadow"
+#
+#   embedded_compiler: "arm-none-eabi-gcc"  # 嵌入式交叉编译器
+#   embedded_compiler_flags:
+#     - "-mcpu=cortex-m4"
+#     - "-mthumb"
+#     - "-std=c11"
+#     - "-ffreestanding"
+#     - "-Wall"
+#     - "-Wextra"
+#     - "-fno-common"
+#
+#   target: "Cortex-M4"                   # 目标处理器
+#   target_spec:                          # 目标详细规格
+#     architecture: "ARMv7E-M"
+#     fpu: "FPv4-SP"                      #   浮点单元
+#     clock_mhz: 168
+#     ram_kb: 128
+#     flash_kb: 512
+#
+#   # 构建系统
+#   build_system: "make"
+#   build_options:
+#     parallel_jobs: 4                    #   make -j N
+#     keep_going: false                   #   make -k (不因单个错误停止)
+#
+#   # 测试框架
+#   test_framework: "custom"              # custom / CUnit / Unity
+#   test_options:
+#     timeout_seconds: 30
+#     output_format: "junit"             #   junit / tap / custom
+
+# ── 项目制品目录 ─────────────────────────────────────────
+# 定义项目各类型制品的存放目录 (相对于项目根目录)。
+# PLA生成expected_outputs时使用这些路径。
+#
+# artifacts:
+#   requirements: "requirements/"         # SR / HLR / LLR 需求文档
+#   models: "models/"                     # SysML / UML 模型文件
+#   source: "src/"                        # C/C++ 源代码
+#   tests: "tests/"                       # 测试用例、测试规程
+#   evidence: "evidence/"                 # 过程证据、追溯矩阵
+#   build: "build/"                       # 编译产物
+#   docs: "docs/"                         # 可选: 设计文档、评审材料
+
+# ── 项目里程碑 ───────────────────────────────────────────
+# 可选: 定义项目的阶段划分，PLA可据此调整编排策略。
+#
+# milestones:
+#   - phase: "SR_Analysis"                # 系统需求分析
+#     deadline: "2026-Q3"
+#     human_gate: "initial_plan"
+#
+#   - phase: "Preliminary_Design"         # 概要设计
+#     deadline: "2026-Q4"
+#     outputs: ["HLR", "Architecture Model"]
+#
+#   - phase: "Detailed_Design"            # 详细设计
+#     deadline: "2027-Q1"
+#     outputs: ["LLR", "Detailed Design Model"]
+#
+#   - phase: "Coding"                     # 编码
+#     deadline: "2027-Q2"
+#     outputs: ["Source Code", "Build Artifacts"]
+#
+#   - phase: "Testing"                    # 测试
+#     deadline: "2027-Q3"
+#     outputs: ["Test Results", "Coverage Report"]
+#
+#   - phase: "Certification"              # 审定
+#     deadline: "2027-Q4"
+#     outputs: ["PSAC", "SCI", "SAS", "Evidence Package"]

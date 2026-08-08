@@ -3,8 +3,8 @@ Agent间通信协议 (Task Context / Execution Result)
 
 定义PLA与DA之间消息传递的标准化格式。
 通信方式: 文件消息传递 (file-based message passing)
-  PLA → DA: queue/outbox/{da-name}/task_{task_id}.json
-  DA → PLA: queue/inbox/{da-name}/result_{task_id}.json
+  PLA → DA: projects/{project_id}/.pla/queue/outbox/{da-name}/task_{task_id}.json
+  DA → PLA: projects/{project_id}/.pla/queue/inbox/{da-name}/result_{task_id}.json
 """
 
 import json

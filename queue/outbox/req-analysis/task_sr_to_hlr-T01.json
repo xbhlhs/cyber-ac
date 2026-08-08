@@ -1,0 +1,43 @@
+{
+  "task_id": "sr_to_hlr-T01",
+  "da_name": "req-analysis",
+  "activity_type": "sr_to_hlr",
+  "description": "分析需求",
+  "task_name": "分析需求",
+  "inputs": {
+    "upstream": "sr_to_hlr"
+  },
+  "expected_outputs": [
+    "projects/sr1/evidence/req_analysis.md"
+  ],
+  "constraints": {
+    "dal_level": "D",
+    "applicable_objectives": [
+      {
+        "id": "A3-1",
+        "desc": "HLR comply with system requirements"
+      },
+      {
+        "id": "A3-2",
+        "desc": "HLR are accurate and consistent"
+      },
+      {
+        "id": "A3-6",
+        "desc": "HLR are traceable to system requirements"
+      }
+    ],
+    "coding_constraints": {
+      "language": "C",
+      "standard": "C11",
+      "compiler": "GCC",
+      "no_dynamic_memory": true
+    }
+  },
+  "dal_level": "D",
+  "development_path": "fusion",
+  "human_gate_before": false,
+  "human_gate_after": false,
+  "human_gate_type": "",
+  "created_at": "2026-08-08T14:57:18.191868",
+  "dag_version": 1
+}

@@ -59,12 +59,6 @@ TOOL_REGISTRY: dict[str, ToolDef] = {
         description="GCC C compiler — compile C source files (host or cross-compiler)",
         config={"command": "gcc", "default_flags": ["-Wall", "-Wextra", "-std=c11", "-pedantic"]},
     ),
-    "plantuml": ToolDef(
-        name="plantuml",
-        resource_type=ResourceType.CLI,
-        description="PlantUML — render SysML/UML diagrams from .puml to PNG/SVG",
-        config={"command": "plantuml", "formats": ["png", "svg"]},
-    ),
     "git": ToolDef(
         name="git",
         resource_type=ResourceType.CLI,

@@ -105,7 +105,6 @@ fusion/
 ├── tools/                      # 工程资源工具
 │   ├── registry.py             #   工具注册表 + DA工具分配
 │   ├── gcc.py                  #   GCC编译器包装器
-│   ├── sysml.py                #   PlantUML渲染包装器
 │   └── git.py                  #   Git版本管理包装器
 ├── examples/                   # 配置模板示例 (全量注释版)
 │   ├── README.md              #   模板使用说明
@@ -121,7 +120,6 @@ fusion/
 │   ├── evidence/              #   证据模板 (checklist, task plan, trace matrix)
 │   └── projects/
 │       └── config.yaml        #     项目配置模板
-├── scripts/                    # 运行脚本 (run_pla.py, run_da.py)
 ├── projects/                   # 项目目录 (每个SR一个子目录)
 │   └── sr1/                   #   SR-1 贯穿案例
 │       ├── config.yaml        #   项目特定约束 (DAL D, 适用目标)

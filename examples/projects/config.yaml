@@ -138,8 +138,8 @@
 #   da:
 #     req-analysis:  [llm_api]
 #     req-decomp:    [llm_api]
-#     model-build:   [plantuml, llm_api]
-#     model-check:   [plantuml, llm_api]
+#     model-build:   [llm_api]           # DA-03 直接生成文本模型
+#     model-check:   [llm_api]
 #     code-gen:      [gcc, llm_api]
 #     code-check:    [gcc]
 #     test-scenario: [llm_api]

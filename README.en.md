@@ -113,7 +113,6 @@ fusion/
 ├── tools/                      # Engineering resource tools
 │   ├── registry.py             #   Tool registry + DA tool assignment
 │   ├── gcc.py                  #   GCC compiler wrapper
-│   ├── sysml.py                #   PlantUML rendering wrapper
 │   └── git.py                  #   Git version control wrapper
 ├── examples/                   # Configuration templates (fully annotated)
 │   ├── README.md              #   Template usage guide
@@ -129,7 +128,6 @@ fusion/
 │   ├── evidence/              #   Evidence templates (checklist, task plan, trace matrix)
 │   └── projects/
 │       └── config.yaml        #     Project configuration template
-├── scripts/                    # Run scripts (run_pla.py, run_da.py)
 ├── projects/                   # Project directories (one per SR)
 │   └── sr1/                   #   SR-1 walkthrough case
 │       ├── config.yaml        #   Project-specific constraints (DAL D, applicable objectives)

@@ -300,6 +300,9 @@ The PLA embeds 5 types of controlled pause points in the Task DAG. Gates do not 
 ### Build and Run SR-1
 
 ```bash
+# Install Python dependencies
+pip install -r requirements.txt
+
 # Clone the repository
 git clone git@github.com:xbhlhs/cyber-ac.git
 cd fusion

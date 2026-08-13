@@ -194,6 +194,47 @@
 #       - llm_api                #   材料整理
 #     airworth-evidence: []      #   证据打包: 纯文件操作
 
+# ── DA LLM 模型分配 — 全局默认映射 ─────────────────────
+# 定义每个DA使用的LLM provider和model。
+#
+# PLA本身使用 ~/.hermes/config.yaml 中的 delegation.model。
+# DA通过 terminal("hermes chat -q ... --provider X --model Y") 独立spawn。
+#
+# 解析顺序: da_models.overrides[da_name] → da_models.default
+# overrides 中设为 null 表示该DA不需要LLM (纯工具执行，如test-exec)
+#
+# 项目可通过 projects/{id}/.pla/environment/config.yaml 覆盖。
+# 依据: ~/workspace/ref/Agents' Model Default Configuration.md
+#
+da_models:
+  default:                          # 8个DA共用 (DA-03/06/08/11/12/13/14)
+    provider: deepseek
+    model: deepseek-v4-flash
+  overrides:
+    req-analysis:                   # DA-01 需求分析
+      provider: deepseek
+      model: deepseek-v4-pro
+    req-decomp:                     # DA-02 需求分解
+      provider: deepseek
+      model: deepseek-v4-pro
+    model-check:                    # DA-04 模型检查
+      provider: alibaba
+      model: qwen3.7-flash
+      context_length: 250000
+    code-gen:                       # DA-05 代码生成
+      provider: openai-codex
+      model: gpt-5.6-terra
+    test-scenario:                  # DA-07 测试场景分析
+      provider: deepseek
+      model: deepseek-v4-pro
+    test-proc-gen:                  # DA-09 测试规程生成
+      provider: deepseek
+      model: deepseek-v4-pro
+    test-exec:                      # DA-10 测试执行
+      provider: alibaba
+      model: qwen3.7-flash
+      context_length: 250000
+
 # ── 人工闸门 (基础设施级) ────────────────────────────────
 # PLA在编排时根据DAL级别决定是否触发闸门。
 # 闸门定义在基础设施层——PLA L2动态决策是否插入。

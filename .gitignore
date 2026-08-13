@@ -1,9 +1,10 @@
 # Build artifacts
-projects/sr1/build/
+build/
 __pycache__/
 *.pyc
 *.o
 *.out
+*.a
 
 # PLA runtime directories (非制品，PLA自动生成)
 .pla/
@@ -11,6 +12,19 @@ __pycache__/
 # Python
 *.egg-info/
 dist/
+
+# 项目运行目录 (非受控，各项目实例不入库)
+projects/
+validation-runs/
+
+# 归档文件
+*.tar.gz
+*.tar
+*.zip
+
+# 散落的测试二进制/源码
+sr1_test_runner
+sr1_test_runner.c
 
 # System
 .DS_Store

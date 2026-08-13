@@ -28,12 +28,15 @@ class Perception:
     def perceive(self) -> ActivityContext:
         config_path = self.project_dir / "config.yaml"
         project_config = {}
+        project_path_constraints = {}
         if config_path.exists():
             with open(config_path) as f:
-                project_config = yaml.safe_load(f).get("project", {})
+                full_config = yaml.safe_load(f) or {}
+            project_config = full_config.get("project", {})
+            project_path_constraints = full_config.get("project_path_constraints", {})
 
         artifacts = self._scan_artifacts()
-        constraints = self._load_constraints(project_config)
+        constraints = self._load_constraints(project_config, project_path_constraints)
 
         return ActivityContext(
             project_id=project_config.get("id", self.project_dir.name),
@@ -54,7 +57,7 @@ class Perception:
             artifacts[name] = {"path":str(p), "exists":p.exists(), "size":p.stat().st_size if p.exists() and p.is_file() else 0}
         return artifacts
 
-    def _load_constraints(self, project_config: dict = None) -> dict:
+    def _load_constraints(self, project_config: dict = None, project_path_constraints: dict = None) -> dict:
         constraints = {}
 
         # DO-178C
@@ -72,8 +75,8 @@ class Perception:
                 constraints["company"] = yaml.safe_load(f).get("company_standards", {})
 
         # 项目路径约束
-        if project_config:
-            constraints["project_path"] = project_config.get("project_path_constraints", {})
+        if project_path_constraints:
+            constraints["project_path"] = project_path_constraints
 
         return constraints
 

@@ -214,7 +214,75 @@ da_tools:
 ```
 只需在工具注册表中添加 `idef0` 工具定义，无需修改任何DA的AGENT.md。
 
+## 项目初始化
+
+**初始化是人工/驱动Agent的职责，不是PLA/DA的运行时行为。**
+
+使用 `scripts/init_project.py` 从 `examples/` 模板创建项目，按 DAL 裁切约束文件：
+
+```bash
+python3 scripts/init_project.py <project_id> <dal_level>
+
+# 示例
+python3 scripts/init_project.py sr1 D   # DAL D: 6 目标
+python3 scripts/init_project.py sr2 A   # DAL A: 26 目标
+```
+
+**裁切规则**（`scripts/init_project.py` → `_filter_do178c()`）：
+- 只保留 `applicable_DAL` 包含目标 DAL 的条目
+- DAL D (25 obj) vs DAL A (66 obj) — 项目配置不应包含不适用的目标
+- `company.yaml` 和 `do331.yaml` 全量保留（公司规范不分 DAL，DO-331 触发条件由代码判断）
+
+**裁切后的效果**（以 `do178c.yaml` 为例）：
+
+| 约束表 | DAL D | DAL A |
+|--------|-------|-------|
+| hlr_verification | A3-1, A3-2, A3-6 (3) | A3-1~A3-7 (7) |
+| llr_verification | — (0) | A4-1, A4-2, A4-5~A4-7 (5) |
+| coding_verification | — (0) | A5-1, A5-2, A5-4~A5-6 (5) |
+| testing | A6-1, A6-2, A6-5 (3) | A6-1~A6-5 (5) |
+| structural_coverage | — (0) | A7-5~A7-8 (4) |
+
+**DA 模型分配**：
+- PLA 使用 `~/.hermes/config.yaml` 中的 `delegation.model`
+- DA 使用 `projects/{id}/.pla/environment/config.yaml` 中的 `da_models` 段
+- 解析顺序: `da_models.overrides[da_name]` → `da_models.default`
+- 详细配置参考 `~/workspace/ref/Agents' Model Default Configuration.md`
+
 ## SR-1 贯穿案例
 
 SR-1: 三设备(EQA/EQB/EQC)输入综合计算
 完整路径: SR → HLR → LLR → 模型 → C代码 → 编译 → 测试 → 证据
+
+## Agent 操作约束 (fusion 工作区专用)
+
+> **角色消歧（重要）**：本文件由「驱动 Agent」（面向用户的 CLI Agent，我）视角编写。当进程被 spawn 时，其角色由 spawn prompt 决定：
+> - prompt 含「你作为PLA」→ 该进程**就是 PLA**，直接执行 L1~L5 闭环，**不得**再 spawn 另一个 PLA
+> - prompt 含「你作为DA-XX」→ 该进程**就是 DA-XX**，只执行本任务
+> - 无角色前缀的进程才是驱动 Agent，才负责 spawn PLA
+> 读到本节内容 ≠ 你是驱动 Agent。你的角色由 spawn 指令决定，不由本文件决定。
+
+### 驱动 Agent (我) 的约束
+
+1. 只给 PLA 传递输入（评审结论、SR、项目规范），不指导 PLA 如何执行（L2 是 PLA 的职责）
+2. 不做本该 PLA/DA 做的事——评审打包是 DA-13 的活，HLR 修正是 DA-02 的活
+3. 不碰 `~/.hermes/config.yaml`
+4. PLA 用 terminal spawn（非 delegate_task），DA 由 PLA spawn
+4a. **Spawn prompt 最小化原则**: 驱动→PLA 和 PLA→DA 的 spawn prompt 应极简，只指向指令文档。指令文档（如 `instructions/sr_to_hlr.md`）包含完整上下文、上游结论、步骤指引。L2 生成 Task DAG 骨架，L3 在 dispatch 时动态生成每个 task 的执行文档（写入 `queue/outbox/{da}/task_{id}.json`），融入上游 DA 的产出结论，而非 spawn prompt 中预写死所有细节。
+5. 人工闸门 = 用户裁决，只中继不替代
+6. 评审-响应-再审闭环：评审结论→PLA L2 决策响应→再审→循环至关闭。过程证据独立于结果制品
+
+### 项目交付规范
+
+1. 评审材料为 ZIP 包（独立文件，非合并 md），含 SR 源/输出制品/RTM/过程证据/澄清文件 + 00_index 清单
+2. HLR 仅含需求条目 + 门控总结 + 约束汇总（§1-3），追溯表/AMB 消解/DO-178C 声明/设计理由不属需求文档
+3. 澄清过程每次产生原始记录 + 结构化文件两份，HLR 引用不内联
+4. 人工闸门结论只指导输出完善性/一致性，不指导研发过程行为
+5. 产出物 L5 如实记录，中间过程记录概要（不过于摘要）
+
+### 验证管理
+
+- 每轮全量验证 → `validation-runs/run-NNN/bugs/` 独立管理
+- 项目初始化 = `scripts/init_project.py`（合法 YAML + 按 DAL 裁切）
+- DA 模型参考 `~/workspace/ref/Agents' Model Default Configuration.md`
+- 基线冻结需人工授权

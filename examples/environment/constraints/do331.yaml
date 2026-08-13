@@ -1,153 +1,60 @@
-# ============================================================
-# DO-331 约束模板 — 全量配置 (注释版)
-# ============================================================
+# DO-331 Constraints — Active Config
+# Model-Based Development and Verification Supplement to DO-178C
 #
-# 来源: RTCA DO-331 (2011)
-# 标题: Model-Based Development and Verification Supplement
-#       to DO-178C and DO-278A
-#
-# DO-331是DO-178C的补充标准，增加了基于模型开发(MBD)的专项要求。
-# 仅在使用模型驱动路径时适用。
-# ============================================================
+# DO-331 是 DO-178C 的补充标准，仅在模型驱动路径时适用。
+# 对于 DAL D 的 text_only 路径，大部分目标不适用。
 
-# ── 元数据 ───────────────────────────────────────────────
-# metadata:
-#   standard: "RTCA DO-331"
-#   version: "2011"
-#   doc_id: "DO-331"
-#   title: "Model-Based Development and Verification Supplement to DO-178C and DO-278A"
-#   publisher: "RTCA, Inc."
-#   relationship: "补充DO-178C第6章和Annex A的模型专项要求"
+metadata:
+  standard: "RTCA DO-331"
+  version: "2011"
+  doc_id: "DO-331"
+  title: "Model-Based Development and Verification Supplement to DO-178C and DO-278A"
 
-# ── 模型分类 ─────────────────────────────────────────────
-# model_types:
-#   specification:
-#     name: "规格模型 (Specification Model)"
-#     description: "描述软件需求的抽象表达"
-#     example: "SysML BDD/IBD/需求图表达HLR"
-#     verification: "对应HLR验证目标 (A3-*)，加上MB.A-3专项检查"
-#
-#   design:
-#     name: "设计模型 (Design Model)"
-#     description: "描述软件内部结构的模型"
-#     example: "UML类图/状态机图/活动图表达LLR"
-#     verification: "对应LLR验证目标 (A4-*)，加上MB.A-3专项检查"
+model_types:
+  specification:
+    name: "规格模型 (Specification Model)"
+    description: "描述软件需求的抽象表达"
+    example: "SysML BDD/IBD/需求图表达 HLR"
+    verification: "对应 HLR 验证目标 (A3-*)，加上 MB.A-3 专项检查"
 
-# ── 计划过程要求 ─────────────────────────────────────────
-# 项目计划中必须包含模型策略说明。
-#
-# planning:
-#   model_standards_required: true
-#
-#   model_standards:
-#     - name: "建模语言和表示法"
-#       description: "规定使用的建模语言 (SysML/UML/Capella等) 及其版本"
-#       example: "SysML v1.6 + UML 2.5.1"
-#
-#     - name: "模型结构、命名、文档规范"
-#       description: "包结构、元素命名规则、注释和文档要求"
-#       example: "包命名: 系统→子系统→功能模块; 元素命名: 类型简写_功能名"
-#
-#     - name: "模型与需求/代码追溯规则"
-#       description: "模型元素与SR/LLR/代码之间的追溯链接规则"
-#       example: "每个Block必须关联至少一个HLR ID"
-#
-#     - name: "模型配置管理和变更控制规则"
-#       description: "模型版本管理、基线化、变更审批流程"
-#       example: "模型文件纳入Git管理，冻结后需CR变更"
-#
-#   # 工具鉴定
-#   tool_qualification:
-#     description: "模型工具需工具鉴定 TQL-1~5"
-#     tql_levels:
-#       - "TQL-1: 工具输出不验证即使用 (需最高鉴定)"
-#       - "TQL-5: 工具输出被独立验证 (最低鉴定)"
-#     note: "如果模型生成代码且该代码不再人工审查，则代码生成器需TQL-1鉴定"
+  design:
+    name: "设计模型 (Design Model)"
+    description: "描述软件架构和详细设计"
+    example: "SysML BDD/IBD 表达架构，UML 类图/状态机表达详细设计"
+    verification: "对应 LLR 验证目标 (A4-*)，加上 MB.A-4 专项检查"
 
-# ── 开发过程补充要求 ─────────────────────────────────────
-# development:
-#   - id: "MB.5.1"
-#     title: "规格模型表达HLR"
-#     description: "当使用规格模型表达HLR时，须满足DO-178C Annex A Table A-3的验证目标"
-#     applicability: "模型驱动路径 (model_policy: required 或活动类型强制模型)"
-#
-#   - id: "MB.5.2"
-#     title: "设计模型表达LLR"
-#     description: "当使用设计模型表达LLR时，须满足DO-178C Annex A Table A-4的验证目标"
-#     applicability: "模型驱动路径"
-#
-#   - id: "MB.5.3"
-#     title: "模型生成代码的验证"
-#     description: "如果代码由模型自动生成，需满足以下之一:"
-#     options:
-#       - "代码生成器通过工具鉴定 (TQL-1)"
-#       - "对生成的代码执行与手写代码同等水平的验证"
-#     applicability: "code_generation活动使用模型驱动路径时"
+model_standards_required: true
+model_standards:
+  - "模型元素命名规范"
+  - "模型与需求双向追溯"
+  - "模型仿真验证要求"
 
-# ── 验证过程补充要求 ─────────────────────────────────────
-# verification:
-#   - id: "MB-Review"
-#     title: "模型审查"
-#     description: "检查模型符合建模标准"
-#     methods:
-#       - "语法检查: 模型元素完整性、关系正确性"
-#       - "命名规范: 是否符合项目建模标准"
-#       - "文档完整性: 注释和图例是否齐全"
-#
-#   - id: "MB-Simulation"
-#     title: "模型仿真"
-#     description: "作为需求验证的补充手段"
-#     methods:
-#       - "状态机仿真: 验证状态迁移逻辑"
-#       - "活动图仿真: 验证流程分支"
-#     note: "仿真不能替代实际测试，仅作为早期验证手段"
-#
-#   - id: "MB-Coverage"
-#     title: "模型覆盖分析"
-#     description: "对应代码的结构覆盖分析"
-#     coverage_types:
-#       - "状态覆盖: 所有状态至少进入一次"
-#       - "迁移覆盖: 所有状态迁移至少执行一次"
-#       - "决策覆盖: 所有Guard条件取真/假各一次"
+mb_objectives:
+  planning:
+    - id: "MB.A-2.1"
+      desc: "模型标准已定义并纳入软件计划"
+      applicable_DAL: [A, B, C]
+    - id: "MB.A-2.2"
+      desc: "模型开发工具已鉴定或评估"
+      applicable_DAL: [A, B, C]
 
-# ── Annex Tables 引用 ────────────────────────────────────
-# DO-331补充了7个新Annex表。
-#
-# annex_tables:
-#   - id: "MB.A-1"
-#     title: "Model-Based Planning Objectives"
-#     description: "模型开发计划过程目标"
-#
-#   - id: "MB.A-2"
-#     title: "Model-Based Development Objectives"
-#     description: "模型开发过程目标 (对应A-3/A-4)"
-#
-#   - id: "MB.A-3"
-#     title: "Model-Based Verification of Requirements and Design"
-#     description: "模型需求和设计的验证目标"
-#
-#   - id: "MB.A-4"
-#     title: "Model-Based Verification of Coding and Integration"
-#     description: "模型编码和集成的验证目标"
-#
-#   - id: "MB.A-5"
-#     title: "Model-Based Testing Objectives"
-#     description: "模型基测试目标 (对应A-6)"
-#
-#   - id: "MB.A-6"
-#     title: "Model-Based Configuration Management"
-#     description: "模型配置管理目标"
-#
-#   - id: "MB.A-7"
-#     title: "Model-Based Quality Assurance"
-#     description: "模型质量保证目标"
+  development:
+    - id: "MB.A-3.1"
+      desc: "规格模型符合系统需求"
+      applicable_DAL: [A, B, C]
+    - id: "MB.A-3.2"
+      desc: "规格模型的仿真结果与预期一致"
+      applicable_DAL: [A, B, C]
+    - id: "MB.A-4.1"
+      desc: "设计模型符合规格模型"
+      applicable_DAL: [A, B, C]
+    - id: "MB.A-4.2"
+      desc: "设计模型的仿真结果与规格模型一致"
+      applicable_DAL: [A, B]
 
-# ── 与PLA决策的关联 ──────────────────────────────────────
-# PLA L2在路径决策时参考此约束:
-#   - model_policy == "required" → DO-331全部目标强制适用
-#   - model_policy == "as_dal" → DAL A/B/C部分目标适用
-#   - model_policy == "text_only" → DO-331不适用
-# pla_integration:
-#   trigger_condition: "model_policy != 'model_prohibited'"
-#   load_layer: "L2 + L4"
-#   usage: "L2路径决策时加载模型能力要求; L4偏差定级时引用MB.A-*条款"
+  verification:
+    - id: "MB.A-5.1"
+      desc: "模型到代码的生成过程已验证"
+      applicable_DAL: [A, B, C]
+
+trigger_condition: "model_policy != 'text_only'"

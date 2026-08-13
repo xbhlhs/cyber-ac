@@ -163,5 +163,45 @@ def get_da_tools(da_name: str, project_config_path: str = None, project_id: str 
     return list(set(base_tools + specific))
 
 
+def get_da_model(da_name: str, project_id: str = "sr1") -> dict | None:
+    """
+    获取指定DA在当前项目中的LLM model/provider配置。
+
+    配置位置: projects/{project_id}/.pla/environment/config.yaml → da_models 段
+    解析顺序: da_models.overrides[da_name] → da_models.default
+
+    返回:
+        {"provider": "deepseek", "model": "deepseek-v4-pro"}  — DA需要LLM
+        None                                                    — DA不需要LLM (如test-exec)
+    """
+    env_config = _load_yaml(f"projects/{project_id}/.pla/environment/config.yaml")
+    da_models_cfg = env_config.get("da_models", {})
+    if not da_models_cfg:
+        return None
+
+    # 检查 per-DA override
+    overrides = da_models_cfg.get("overrides", {}) or {}
+    if da_name in overrides:
+        override = overrides[da_name]
+        if override is None:
+            return None  # 显式标记为不需要LLM
+        if isinstance(override, dict):
+            return {
+                "provider": override.get("provider", ""),
+                "model": override.get("model", ""),
+                "context_length": override.get("context_length"),  # 可选
+            }
+
+    # 回退到默认
+    default = da_models_cfg.get("default", {}) or {}
+    if not default:
+        return None
+    return {
+        "provider": default.get("provider", ""),
+        "model": default.get("model", ""),
+        "context_length": default.get("context_length"),  # 可选
+    }
+
+
 # 基础工具（所有DA都可用）
 BASE_TOOLS = ["read_file", "write_file", "terminal", "search_files"]
